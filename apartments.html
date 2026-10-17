@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Prohlédněte si ubytování na Zámečku Kaliště v Posázaví." />
+    <meta name="theme-color" content="#f7f0e6" />
+    <title>Ubytování — Zámeček Kaliště</title>
+    <link rel="preconnect" href="https://061a38cc1e.clvaw-cdnwnd.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="accommodation-data.js" defer></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Přejít k obsahu</a>
+    <header class="site-header" id="top">
+      <div class="header-inner">
+        <a class="brand" href="index.html#top" aria-label="Zámeček Kaliště — úvod">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 42 48" fill="none">
+              <path d="M21 2 39 9v13c0 11-7 19-18 24C10 41 3 33 3 22V9L21 2Z" />
+              <path d="M11 30V19l5 4v-8l5 5v-9l5 9 5-4v14H11Z" />
+              <path d="M18 30v-6h6v6M8 35h26" />
+            </svg>
+          </span>
+          <span class="brand-copy"><span class="brand-name">Zámeček Kaliště</span><span class="brand-place">Poddubí v Posázaví</span></span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+          <span class="menu-toggle-lines" aria-hidden="true"></span><span class="sr-only">Otevřít navigaci</span>
+        </button>
+        <nav class="primary-nav" id="primary-nav" aria-label="Hlavní navigace">
+          <a href="index.html#zamecek">Zámeček</a>
+          <a href="accommodations.html" aria-current="page">Ubytování</a>
+          <a href="index.html#zazitky">Zážitky</a>
+          <a href="photos.html">Fotogalerie</a>
+          <a href="menu.html">Jídelní lístek</a>
+          <a href="index.html#svatby">Svatby &amp; akce</a>
+          <a href="index.html#kontakt">Kontakt</a>
+          <a class="nav-cta" href="reservations.html">Rezervovat <span aria-hidden="true">↗</span></a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="apartment-page" data-apartment-page></main>
+    <footer class="site-footer">
+      <div class="footer-inner page-width">
+        <a class="brand footer-brand" href="index.html#top" aria-label="Zámeček Kaliště — zpět na úvod">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 42 48" fill="none"><path d="M21 2 39 9v13c0 11-7 19-18 24C10 41 3 33 3 22V9L21 2Z" /><path d="M11 30V19l5 4v-8l5 5v-9l5 9 5-4v14H11Z" /><path d="M18 30v-6h6v6M8 35h26" /></svg>
+          </span>
+          <span class="brand-copy"><span class="brand-name">Zámeček Kaliště</span><span class="brand-place">Poddubí v Posázaví</span></span>
+        </a>
+        <p>Pro chvíle, na které se nezapomíná.</p>
+        <a class="back-top" href="#top">Zpět nahoru <span aria-hidden="true">↑</span></a>
+      </div>
+      <div class="footer-bottom page-width"><span>© <span data-current-year></span> Zámeček Kaliště</span><span>S láskou v Posázaví</span></div>
+    </footer>
+  </body>
+</html>

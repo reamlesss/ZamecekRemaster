@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="theme-color" content="#f7f0e6" />
+    <title>Editor jídelního lístku — Zámeček Kaliště</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="menu-data.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="supabase-client.js" defer></script>
+    <script src="owner-menu-editor.js" defer></script>
+  </head>
+  <body class="owner-editor-body">
+    <a class="skip-link" href="#main">Přejít k editoru</a>
+    <header class="owner-editor-header">
+      <a class="brand" href="index.html#top" aria-label="Zámeček Kaliště — úvod">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 42 48" fill="none">
+            <path d="M21 2 39 9v13c0 11-7 19-18 24C10 41 3 33 3 22V9L21 2Z" />
+            <path d="M11 30V19l5 4v-8l5 5v-9l5 9 5-4v14H11Z" />
+            <path d="M18 30v-6h6v6M8 35h26" />
+          </svg>
+        </span>
+        <span class="brand-copy"><span class="brand-name">Zámeček Kaliště</span><span class="brand-place">Editor jídelního lístku</span></span>
+      </a>
+      <div class="owner-header-actions">
+        <a class="owner-preview-link" href="menu.html" target="_blank" rel="noreferrer">Zobrazit veřejný jídelní lístek <span aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+    <main id="main" class="owner-editor-main page-width">
+      <div class="owner-editor-heading">
+        <p class="eyebrow"><span></span> Správa restaurace</p>
+        <h1 class="section-title">Upravit jídelní<br /><em>lístek.</em></h1>
+        <p>Upravte kategorie, jídla, popisy i ceny. Po uložení se změny ihned projeví na veřejné stránce.</p>
+      </div>
+      <aside class="owner-editor-warning" data-owner-setup role="note" hidden>
+        <strong>Je potřeba dokončit Supabase nastavení.</strong> Zkontrolujte údaje v <code>supabase-config.js</code> a spusťte SQL ze souboru <code>supabase/schema.sql</code> v Supabase SQL Editoru.
+      </aside>
+      <aside class="owner-editor-warning owner-editor-access-note" role="note">
+        <strong>Editor bez ochrany zápisu.</strong> Každý návštěvník může nabídku změnit přes Supabase; skrytá adresa editoru není zabezpečení.
+      </aside>
+      <form class="owner-menu-form" data-owner-menu-form hidden>
+        <div class="owner-live-banner"><span class="owner-live-indicator"></span><span>Úpravy se po uložení projeví na veřejné stránce.</span></div>
+        <label class="owner-field owner-notice-field">
+          <span>Upozornění pod jídelním lístkem</span>
+          <textarea name="notice" rows="2"></textarea>
+        </label>
+        <div class="owner-section-list" data-owner-sections></div>
+        <div class="owner-editor-actions">
+          <button class="button button-outline" type="button" data-add-section>＋ Přidat kategorii</button>
+          <button class="button owner-download-button" type="button" data-save-menu>Uložit a zveřejnit <span aria-hidden="true">✓</span></button>
+        </div>
+        <p class="owner-editor-status" data-owner-status aria-live="polite"></p>
+      </form>
+      <ol class="owner-publish-steps" data-owner-setup-steps hidden>
+        <li>V Supabase SQL Editoru spusťte SQL ze souboru <code>supabase/schema.sql</code>.</li>
+        <li>V souboru <code>supabase-config.js</code> nastavte Project URL a veřejný publishable key svého projektu.</li>
+        <li>Toto nastavení dovoluje veřejné úpravy bez přihlášení; skrytá adresa editoru je pouze pohodlí, ne ochrana.</li>
+      </ol>
+    </main>
+    <footer class="site-footer owner-editor-footer">
+      <div class="footer-bottom page-width"><span>Správa jídelního lístku</span><a href="index.html">Zpět na web Zámečku</a></div>
+    </footer>
+  </body>
+</html>

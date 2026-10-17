@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Jídelní lístek zámecké restaurace v Kališti. Teplá i studená lokální kuchyně, steakové speciality na kamenném grilu a nápoje."
+    />
+    <meta name="theme-color" content="#f7f0e6" />
+    <title>Jídelní lístek — Zámeček Kaliště</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="menu-data.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabase-config.js" defer></script>
+    <script src="supabase-client.js" defer></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Přejít k obsahu</a>
+    <header class="site-header" id="top">
+      <div class="header-inner">
+        <a class="brand" href="index.html#top" aria-label="Zámeček Kaliště — úvod">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 42 48" fill="none">
+              <path d="M21 2 39 9v13c0 11-7 19-18 24C10 41 3 33 3 22V9L21 2Z" />
+              <path d="M11 30V19l5 4v-8l5 5v-9l5 9 5-4v14H11Z" />
+              <path d="M18 30v-6h6v6M8 35h26" />
+            </svg>
+          </span>
+          <span class="brand-copy"><span class="brand-name">Zámeček Kaliště</span><span class="brand-place">Poddubí v Posázaví</span></span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+          <span class="menu-toggle-lines" aria-hidden="true"></span><span class="sr-only">Otevřít navigaci</span>
+        </button>
+        <nav class="primary-nav" id="primary-nav" aria-label="Hlavní navigace">
+          <a href="index.html#zamecek">Zámeček</a>
+          <a href="accommodations.html">Ubytování</a>
+          <a href="index.html#zazitky">Zážitky</a>
+          <a href="photos.html">Fotogalerie</a>
+          <a href="menu.html" aria-current="page">Jídelní lístek</a>
+          <a href="index.html#svatby">Svatby &amp; akce</a>
+          <a href="index.html#kontakt">Kontakt</a>
+          <a class="nav-cta" href="reservations.html">Rezervovat <span aria-hidden="true">↗</span></a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="restaurant-menu-page">
+      <section class="restaurant-menu-section section-pad">
+        <div class="page-width">
+          <div class="menu-page-heading">
+            <p class="eyebrow"><span></span> Zámecká restaurace</p>
+            <h1 class="section-title">Dobré jídlo.<br /><em>Ještě lepší chvíle.</em></h1>
+            <p>Poctivá lokální kuchyně, speciality z kamenného grilu a něco dobrého k pití v klidné atmosféře Zámečku.</p>
+            <div class="menu-restaurant-facts">
+              <span>70 míst v restauraci</span><span aria-hidden="true">·</span>
+              <span>Letní zastřešená terasa</span><span aria-hidden="true">·</span>
+              <span>Nekuřácké prostředí</span>
+            </div>
+          </div>
+          <div class="menu-paper">
+            <div class="menu-paper-heading">
+              <span class="menu-paper-mark" aria-hidden="true">✳</span>
+              <p class="eyebrow"><span></span> Nabídka restaurace <span></span></p>
+              <h2>Jídelní <em>lístek</em></h2>
+            </div>
+            <div class="menu-sections" data-restaurant-menu></div>
+            <p class="menu-notice" data-menu-notice></p>
+            <p class="live-menu-status" data-live-menu-status aria-live="polite"></p>
+          </div>
+          <div class="menu-owner-note">
+            <span aria-hidden="true">✎</span>
+            <p><strong>Provozovatel restaurace:</strong> aktuální jídla, popisy a ceny spravuje v zabezpečeném online editoru.</p>
+          </div>
+          <div class="menu-breakfast">
+            <span class="time-icon" aria-hidden="true">◷</span>
+            <p><strong>Snídaně pro ubytované hosty</strong><br />Snídaně formou rautu se podává od 8:00 do 9:30.</p>
+          </div>
+          <div class="menu-contact">
+            <p>Chcete se zeptat na aktuální nabídku nebo rezervovat stůl?</p>
+            <a class="button" href="mailto:nazamecku.provoz@seznam.cz?subject=Dotaz%20na%20nab%C3%ADdku%20restaurace">Napsat do restaurace <span aria-hidden="true">↗</span></a>
+            <a class="menu-phone" href="tel:+420603543629">+420 603 543 629</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-inner page-width">
+        <a class="brand footer-brand" href="index.html#top" aria-label="Zámeček Kaliště — zpět na úvod">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 42 48" fill="none"><path d="M21 2 39 9v13c0 11-7 19-18 24C10 41 3 33 3 22V9L21 2Z" /><path d="M11 30V19l5 4v-8l5 5v-9l5 9 5-4v14H11Z" /><path d="M18 30v-6h6v6M8 35h26" /></svg>
+          </span>
+          <span class="brand-copy"><span class="brand-name">Zámeček Kaliště</span><span class="brand-place">Poddubí v Posázaví</span></span>
+        </a>
+        <p>Pro chvíle, na které se nezapomíná.</p>
+        <a class="back-top" href="#top">Zpět nahoru <span aria-hidden="true">↑</span></a>
+      </div>
+      <div class="footer-bottom page-width"><span>© <span data-current-year></span> Zámeček Kaliště</span><span>S láskou v Posázaví</span></div>
+    </footer>
+  </body>
+</html>
