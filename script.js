@@ -29,7 +29,10 @@ const colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
 const themeColor = document.querySelector('meta[name="theme-color"]');
 
 function updateThemeColor(event) {
-  if (themeColor) themeColor.content = event.matches ? "#211813" : "#f7f0e6";
+  // if (themeColor) themeColor.content = event.matches ? "#211813" : "#f7f0e6";
+    //if (themeColor) themeColor.content = "#211813"; //darkmode na tvrdo'
+    themeColor.content = '#211813'
+
 }
 
 updateThemeColor(colorScheme);
@@ -309,7 +312,7 @@ if (apartmentPage) {
             <span class="facts-kicker">Na první pohled</span>
             <div class="fact-row"><span class="fact-icon" aria-hidden="true">♙</span><span><strong>${escapeHtml(accommodation.capacity)}</strong><small>Kapacita podle původního webu</small></span></div>
             <div class="fact-row"><span class="fact-icon" aria-hidden="true">⌂</span><span><strong>${escapeHtml(accommodation.beds)}</strong><small>${escapeHtml(accommodation.location)}</small></span></div>
-            <div class="fact-row"><span class="fact-icon" aria-hidden="true">⌖</span><span><strong>Poddubí 55</strong><small>251 65 Kaliště · Posázaví</small></span></div>
+            <div class="fact-row"><span class="fact-icon" aria-hidden="true"><img src="location-pin.svg" alt="" /></span><span><strong>Poddubí 55</strong><small>251 65 Kaliště · Posázaví</small></span></div>
             <span class="facts-divider"></span>
             <span class="facts-kicker">Cena uvedená na webu</span>
             <strong class="apartment-price">${escapeHtml(accommodation.price)}</strong>

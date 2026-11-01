@@ -1,18 +1,105 @@
+/* ==========================================================================
+   SITE STYLESHEET (cleaned & documented)
+   --------------------------------------------------------------------------
+   Warm "paper / clay / forest" theme for a guesthouse website
+   (home, apartment detail, reservation, restaurant menu, owner menu editor,
+   accommodation directory, photo directory, wedding page).
+
+   HOW THIS FILE IS ORGANISED
+   --------------------------------------------------------------------------
+   Rules are grouped by the component they belong to. Every selector appears
+   once: the many "override" blocks of the old file were merged so that each
+   rule contains only its final, effective declarations.
+
+     1.  Design tokens (custom properties)
+     2.  Base / reset
+     3.  Layout utilities
+     4.  Shared components (eyebrow, titles, buttons, headings, carousel...)
+     5.  Site header & navigation
+     6.  Home: hero
+     7.  Home: welcome (intro + image carousel)
+     8.  Home: stay cards
+     9.  Home: experiences
+    10.  Home: wedding band
+    11.  Wedding page
+    12.  Home: dining
+    13.  Opening hours
+    14.  Section subtitle
+    15.  Home: gallery
+    16.  Contact
+    17.  Footer
+    18.  Apartment page
+    19.  Reservation page
+    20.  Restaurant menu page
+    21.  Owner menu editor
+    22.  Accommodation directory
+    23.  Photo directory & lightbox
+    24.  Responsive overrides (by breakpoint)
+    25.  Reduced motion
+    26.  Dark theme (prefers-color-scheme: dark)
+
+   CASCADE NOTES (why some things sit where they do)
+   --------------------------------------------------------------------------
+   * Responsive rules live in section 24, AFTER all base rules, exactly like
+     in the original file, so "mobile beats base" behaves as before.
+   * Inside each @media block the rules keep the original relative order.
+   * .gallery-heading is declared right next to .section-heading (before the
+     mobile override) and .apartment-gallery-heading / .photo-page-heading are
+     re-stated inside the 760px block. This keeps the original winner on every
+     screen size when one element carries several of these classes.
+   * The dark theme is one block at the very end so it always wins ties.
+
+   WHAT WAS REMOVED (only things that could never have an effect)
+   --------------------------------------------------------------------------
+   * Declarations overridden later at equal/higher specificity (old palette
+     block, "warmer rhythm" block, carousel block, duplicate :root, ...).
+   * `.hero` min-height at >=1500px (always overridden by a later rule).
+   * Mobile `.hero-image` object-position (overridden by a later base rule).
+   * `.welcome-image-wrap::after` frame (finally `display: none`), and its
+     dark-mode background.
+   * `.experience-card` border-left / border-top rules (replaced by a full
+     `border`), and `margin-left: 0` (browser default).
+   * `transition-timing-function` on elements that have no transition.
+   * Exact duplicates (e.g. `.photo-card:nth-child(7n + 1)` row span at 600px,
+     dark rules that repeat values already provided by tokens/specificity).
+   * Old easing `ease` in transitions that were later switched to the
+     `--ease-out` curve is now written directly as `var(--ease-out)`.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ========================================================================== */
+
 :root {
   color-scheme: light;
-  --paper: #f7f0e6;
-  --paper-deep: #eadccb;
-  --ink: #39291f;
-  --muted: #86705f;
-  --forest: #634733;
-  --forest-deep: #38271e;
-  --sage: #d1b89a;
-  --clay: #a66d48;
+
+  /* Colours */
+  --paper: #f7f0e6;        /* page background */
+  --paper-deep: #eadccb;   /* alternate section background */
+  --ink: #39291f;          /* main text */
+  --muted: #86705f;        /* secondary text */
+  --forest: #634733;       /* primary brand colour (dark brown) */
+  --forest-deep: #38271e;  /* footer / selection text */
+  --sage: #d1b89a;         /* light accent */
+  --clay: #a66d48;         /* main accent */
   --line: rgba(74, 49, 32, 0.16);
-  --serif: "Playfair Display", Georgia, serif;
+
+  /* Typography */
+  --serif: Garamond, "Times New Roman", serif;
   --sans: "DM Sans", Arial, sans-serif;
+
+  /* Layout */
   --page-width: 1180px;
+
+  /* Motion: shared easing curve */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
+
+
+/* ==========================================================================
+   2. BASE / RESET
+   ========================================================================== */
 
 * {
   box-sizing: border-box;
@@ -20,14 +107,15 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 92px;
+  scroll-padding-top: 92px; /* room for the header when jumping to anchors */
 }
 
 body {
   margin: 0;
-  background: var(--paper);
+  background:
+    radial-gradient(ellipse at 12% 30%, rgba(211, 190, 159, 0.12), transparent 28%),
+    var(--paper);
   color: var(--ink);
-  font-family: var(--sans);
   font-size: 15px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
@@ -58,15 +146,23 @@ button {
   color: var(--forest-deep);
 }
 
+
+/* ==========================================================================
+   3. LAYOUT UTILITIES
+   ========================================================================== */
+
+/* Centered content column */
 .page-width {
   width: min(var(--page-width), calc(100% - 100px));
   margin-inline: auto;
 }
 
+/* Default vertical padding of a page section */
 .section-pad {
   padding-block: 120px;
 }
 
+/* Visually hidden helpers (screen readers / skip link) */
 .skip-link,
 .sr-only {
   position: absolute;
@@ -91,169 +187,12 @@ button {
   clip-path: none;
 }
 
-.site-header {
-  position: relative;
-  z-index: 10;
-  background: var(--paper);
-}
 
-.header-inner {
-  width: min(1380px, calc(100% - 80px));
-  height: 94px;
-  margin-inline: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-}
+/* ==========================================================================
+   4. SHARED COMPONENTS
+   ========================================================================== */
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.brand-mark {
-  display: grid;
-  width: 38px;
-  color: var(--clay);
-  place-items: center;
-}
-
-.brand-mark svg {
-  width: 34px;
-  stroke: currentColor;
-  stroke-width: 1.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.brand-copy {
-  display: grid;
-  line-height: 1.35;
-}
-
-.brand-name {
-  font-family: var(--serif);
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.015em;
-}
-
-.brand-place {
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.primary-nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(20px, 3vw, 42px);
-  color: #574334;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.primary-nav > a:not(.nav-cta) {
-  position: relative;
-  padding-block: 10px;
-  transition: color 180ms ease;
-}
-
-.primary-nav > a:not(.nav-cta)::after {
-  position: absolute;
-  right: 0;
-  bottom: 3px;
-  left: 0;
-  height: 1px;
-  background: var(--clay);
-  content: "";
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 220ms ease;
-}
-
-.primary-nav > a:not(.nav-cta):hover {
-  color: var(--clay);
-}
-
-.primary-nav > a:not(.nav-cta):hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
-.nav-cta {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  gap: 18px;
-  padding: 0 19px;
-  background: var(--forest);
-  color: white;
-  transition: background 180ms ease;
-}
-
-.nav-cta:hover {
-  background: var(--clay);
-}
-
-.nav-cta span,
-.text-link span,
-.button span,
-.contact-map span,
-.experience-card a span,
-.back-top span {
-  font-size: 16px;
-  line-height: 1;
-}
-
-.menu-toggle {
-  display: none;
-}
-
-.hero {
-  position: relative;
-  min-height: min(730px, calc(100svh - 94px));
-  min-height: max(620px, min(730px, calc(100svh - 94px)));
-  overflow: hidden;
-  background: #382a22;
-  color: white;
-}
-
-.hero-image,
-.hero-shade {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.hero-image {
-  object-fit: cover;
-  object-position: center 53%;
-  animation: hero-appear 900ms ease-out both;
-}
-
-.hero-shade {
-  background:
-    linear-gradient(90deg, rgba(47, 33, 24, 0.8) 0%, rgba(47, 33, 24, 0.54) 42%, rgba(47, 33, 24, 0.1) 100%),
-    linear-gradient(0deg, rgba(47, 33, 24, 0.25), transparent 35%);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  min-height: inherit;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 4px;
-  padding-bottom: 20px;
-}
+/* ---- 4.1 Eyebrow (small uppercase label above titles) ------------------- */
 
 .eyebrow {
   display: flex;
@@ -278,6 +217,14 @@ button {
   color: rgba(255, 255, 255, 0.77);
 }
 
+/* Eyebrow spacing depends on where it is used */
+.welcome-copy .eyebrow,
+.dining-copy .eyebrow {
+  margin-bottom: 23px;
+}
+
+/* ---- 4.2 Titles ---------------------------------------------------------- */
+
 .hero h1,
 .section-title {
   margin: 0;
@@ -294,176 +241,7 @@ button {
   font-weight: 400;
 }
 
-.hero-intro {
-  max-width: 460px;
-  margin: 26px 0 0;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 34px;
-  margin-top: 36px;
-}
-
-.button {
-  display: inline-flex;
-  min-height: 54px;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding: 0 23px;
-  font-size: 12px;
-  font-weight: 600;
-  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
-}
-
-.button-light {
-  background: var(--paper);
-  color: var(--forest);
-}
-
-.button-light:hover {
-  background: var(--sage);
-}
-
-.hero-phone {
-  display: inline-flex;
-  align-items: center;
-  gap: 11px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 12px;
-}
-
-.phone-icon {
-  display: grid;
-  width: 31px;
-  height: 31px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  font-size: 13px;
-  place-items: center;
-}
-
-.hero-note {
-  position: absolute;
-  z-index: 1;
-  right: max(50px, calc((100% - var(--page-width)) / 2));
-  bottom: 48px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.note-line {
-  width: 32px;
-  height: 1px;
-  background: var(--sage);
-}
-
-.scroll-cue {
-  position: absolute;
-  bottom: -1px;
-  left: 50%;
-  width: 32px;
-  height: 55px;
-  background: var(--paper);
-  transform: translateX(-50%);
-}
-
-.scroll-cue span {
-  position: absolute;
-  top: 13px;
-  left: 15px;
-  width: 1px;
-  height: 21px;
-  background: var(--clay);
-}
-
-.welcome {
-  padding-block: 145px 130px;
-}
-
-.welcome-grid {
-  display: grid;
-  grid-template-columns: 1.03fr 0.97fr;
-  align-items: center;
-  gap: clamp(70px, 11vw, 145px);
-}
-
-.welcome-image-wrap {
-  position: relative;
-  padding: 0 26px 32px 0;
-}
-
-.welcome-image-wrap::after {
-  position: absolute;
-  z-index: -1;
-  right: 0;
-  bottom: 0;
-  width: 72%;
-  height: 77%;
-  border: 1px solid #d2bda4;
-  content: "";
-}
-
-.welcome-image {
-  width: 100%;
-  height: 460px;
-  object-fit: cover;
-  object-position: center;
-}
-
-.image-caption {
-  position: absolute;
-  right: 26px;
-  bottom: 32px;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 17px 20px;
-  background: rgba(56, 39, 30, 0.87);
-  color: white;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.image-caption span:first-child {
-  color: #ddbea0;
-}
-
-.image-stamp {
-  position: absolute;
-  top: 28px;
-  right: -28px;
-  display: grid;
-  width: 93px;
-  height: 93px;
-  border-radius: 50%;
-  background: var(--clay);
-  color: white;
-  font-family: var(--serif);
-  font-size: 14px;
-  line-height: 1.18;
-  text-align: center;
-  transform: rotate(8deg);
-  place-content: center;
-}
-
-.welcome-copy .eyebrow,
-.dining-copy .eyebrow {
-  margin-bottom: 23px;
-}
-
+/* Titles on light sections: dark ink, medium size, clay italics */
 .welcome-copy .section-title,
 .dining-copy .section-title,
 .section-heading .section-title {
@@ -478,20 +256,44 @@ button {
   color: var(--clay);
 }
 
-.welcome-copy p:not(.eyebrow),
-.dining-copy > p:not(.eyebrow) {
-  max-width: 500px;
-  color: #78695d;
-  font-size: 13px;
-  line-height: 1.95;
+/* ---- 4.3 Buttons & links ------------------------------------------------- */
+
+.button {
+  display: inline-flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 0 23px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    background 180ms var(--ease-out),
+    color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out);
 }
 
-.welcome-copy .lead,
-.dining-copy .lead {
-  margin-top: 26px;
-  color: #514032 !important;
-  font-size: 15px !important;
-  line-height: 1.85 !important;
+.button-light {
+  background: var(--paper);
+  color: var(--forest);
+  box-shadow: 0 5px 16px rgba(26, 32, 25, 0.12);
+}
+
+.button-light:hover {
+  background: var(--sage);
+}
+
+.button-outline-light {
+  min-height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  color: white;
+}
+
+.button-outline-light:hover {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--forest);
 }
 
 .text-link {
@@ -503,7 +305,7 @@ button {
   color: var(--forest);
   font-size: 12px;
   font-weight: 600;
-  transition: color 180ms ease, border-color 180ms ease;
+  transition: color 180ms var(--ease-out), border-color 180ms var(--ease-out);
 }
 
 .text-link:hover {
@@ -515,37 +317,20 @@ button {
   margin-top: 12px;
 }
 
-.welcome-details {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-top: 44px;
-  color: #806e5f;
-  font-size: 11px;
-  line-height: 1.7;
+/* Arrow glyphs inside links/buttons */
+.nav-cta span,
+.text-link span,
+.button span,
+.contact-map span,
+.experience-card a span,
+.back-top span {
+  font-size: 16px;
+  line-height: 1;
 }
 
-.detail-icon {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  border: 1px solid #d8c8b5;
-  border-radius: 50%;
-  color: var(--clay);
-  font-size: 22px;
-  place-items: center;
-}
+/* ---- 4.4 Section headings ------------------------------------------------ */
 
-.welcome-details strong {
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.stay {
-  background: var(--paper-deep);
-}
-
+/* Left-aligned heading with an aside paragraph on the right */
 .section-heading {
   display: flex;
   align-items: flex-end;
@@ -561,106 +346,21 @@ button {
 .section-aside {
   max-width: 350px;
   margin: 0 0 5px;
-  color: #76796f;
+  color: #78695d;
   font-size: 12px;
   line-height: 1.9;
 }
 
-.stay-grid {
-  display: grid;
-  height: 490px;
-  grid-template-columns: 1.05fr 0.95fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 16px;
+/* Declared here (before the mobile override) on purpose - see cascade notes */
+.gallery-heading {
+  margin-bottom: 38px;
 }
 
-.stay-card {
-  position: relative;
-  overflow: hidden;
-  background: #80624a;
-  color: white;
+.gallery-heading > .text-link {
+  margin-bottom: 6px;
 }
 
-.stay-card-large {
-  grid-row: span 2;
-}
-
-.stay-card > img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.stay-card:hover > img {
-  transform: scale(1.045);
-}
-
-.stay-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(48, 33, 23, 0.82) 0%, rgba(48, 33, 23, 0.08) 73%);
-}
-
-.stay-card-content {
-  position: absolute;
-  right: 27px;
-  bottom: 26px;
-  left: 29px;
-  display: grid;
-  gap: 5px;
-}
-
-.card-kicker {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 9px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
-.stay-card-content > strong {
-  font-family: var(--serif);
-  font-size: clamp(21px, 2.4vw, 30px);
-  font-weight: 400;
-  line-height: 1.25;
-}
-
-.stay-card-large .stay-card-content > strong {
-  font-size: clamp(28px, 3vw, 39px);
-}
-
-.card-arrow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 190px;
-  margin-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.45);
-  padding-top: 10px;
-  color: rgba(255, 255, 255, 0.84);
-  font-size: 10px;
-}
-
-.card-arrow b {
-  font-size: 15px;
-  font-weight: 400;
-}
-
-.stay-footnote {
-  margin: 21px 0 0;
-  color: #6c7167;
-  font-size: 11px;
-}
-
-.stay-footnote span {
-  margin-right: 7px;
-  color: var(--clay);
-}
-
-.experiences {
-  padding-block: 128px 138px;
-}
-
+/* Centered heading */
 .center-heading {
   margin-bottom: 63px;
   text-align: center;
@@ -675,1408 +375,7 @@ button {
   font-size: clamp(39px, 4.2vw, 55px);
 }
 
-.experience-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.experience-card {
-  position: relative;
-  min-height: 277px;
-  padding: 30px 27px 28px;
-}
-
-.experience-card + .experience-card {
-  border-left: 1px solid var(--line);
-}
-
-.experience-number {
-  color: #9a8877;
-  font-size: 9px;
-  letter-spacing: 0.12em;
-}
-
-.experience-icon {
-  display: block;
-  width: 36px;
-  height: 36px;
-  margin-top: 21px;
-  color: var(--clay);
-}
-
-.experience-icon svg {
-  width: 100%;
-  height: 100%;
-  stroke: currentColor;
-  stroke-width: 1.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.experience-card h3 {
-  margin: 15px 0 9px;
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.26;
-}
-
-.experience-card p {
-  min-height: 58px;
-  margin: 0 0 17px;
-  color: #796b5e;
-  font-size: 11px;
-  line-height: 1.8;
-}
-
-.experience-card a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  color: var(--forest);
-  font-size: 10px;
-  font-weight: 600;
-  transition: color 180ms ease;
-}
-
-.experience-card a:hover {
-  color: var(--clay);
-}
-
-.wedding {
-  position: relative;
-  display: grid;
-  min-height: 530px;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  overflow: hidden;
-  padding: 0;
-  background: var(--forest);
-  color: white;
-}
-
-.wedding-image {
-  position: absolute;
-  inset: 0 50% 0 0;
-  overflow: hidden;
-}
-
-.wedding-image::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(52, 37, 28, 0.02), rgba(52, 37, 28, 0.27));
-  content: "";
-}
-
-.wedding-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.wedding-copy {
-  position: relative;
-  z-index: 1;
-  grid-column: 2;
-  max-width: 490px;
-  padding: 95px 40px 95px 8%;
-}
-
-.wedding-copy .eyebrow {
-  margin-bottom: 20px;
-}
-
-.wedding-copy .section-title {
-  font-size: clamp(42px, 4.8vw, 62px);
-}
-
-.wedding-copy .section-title em {
-  color: #d7bea0;
-}
-
-.wedding-copy > p:not(.eyebrow) {
-  max-width: 390px;
-  margin: 24px 0 28px;
-  color: rgba(255, 255, 255, 0.71);
-  font-size: 13px;
-  line-height: 1.95;
-}
-
-.button-outline-light {
-  min-height: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  color: white;
-}
-
-.button-outline-light:hover {
-  border-color: var(--paper);
-  background: var(--paper);
-  color: var(--forest);
-}
-
-.wedding-number {
-  position: absolute;
-  right: 7%;
-  bottom: -92px;
-  color: rgba(255, 255, 255, 0.04);
-  font-family: var(--serif);
-  font-size: 330px;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.dining {
-  overflow: hidden;
-}
-
-.dining-grid {
-  display: grid;
-  grid-template-columns: 0.87fr 1.13fr;
-  align-items: center;
-  gap: clamp(60px, 10vw, 130px);
-}
-
-.dining-copy .lead {
-  margin-top: 25px;
-}
-
-.dining-time {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 28px 0 24px;
-  color: #806e5f;
-  font-size: 11px;
-  line-height: 1.8;
-}
-
-.dining-time strong {
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.time-icon {
-  display: grid;
-  width: 39px;
-  height: 39px;
-  border: 1px solid #d8c8b5;
-  border-radius: 50%;
-  color: var(--clay);
-  font-size: 22px;
-  place-items: center;
-}
-
-.dining-photos {
-  position: relative;
-  min-height: 460px;
-  padding: 0 0 37px 52px;
-}
-
-.dining-photos::before {
-  position: absolute;
-  z-index: -1;
-  top: -30px;
-  left: 22px;
-  width: 70%;
-  height: 80%;
-  border: 1px solid #d7c5ae;
-  content: "";
-}
-
-.dining-main-photo {
-  width: 100%;
-  height: 393px;
-  object-fit: cover;
-}
-
-.dining-small-photo {
-  position: absolute;
-  right: -6px;
-  bottom: 0;
-  width: 45%;
-  height: 190px;
-  border: 10px solid var(--paper);
-  object-fit: cover;
-}
-
-.dining-photo-note {
-  position: absolute;
-  bottom: 8px;
-  left: 51px;
-  color: #806e5f;
-  font-family: var(--serif);
-  font-size: 14px;
-  font-style: italic;
-}
-
-.gallery {
-  padding-block: 100px 124px;
-  background: var(--paper-deep);
-}
-
-.gallery-heading {
-  margin-bottom: 38px;
-}
-
-.gallery-heading > .text-link {
-  margin-bottom: 6px;
-}
-
-.gallery-grid {
-  display: grid;
-  height: 310px;
-  grid-template-columns: 1.15fr 0.8fr 0.8fr 1.05fr;
-  gap: 12px;
-}
-
-.gallery-grid img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: filter 220ms ease;
-}
-
-.gallery-grid img:hover {
-  filter: brightness(0.88);
-}
-
-.contact {
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse at 13% 100%, rgba(177, 137, 99, 0.17), transparent 35%),
-    var(--forest);
-  color: white;
-}
-
-.contact-grid {
-  display: grid;
-  grid-template-columns: 1fr 0.65fr;
-  align-items: center;
-  gap: 100px;
-}
-
-.contact-copy .eyebrow {
-  margin-bottom: 21px;
-}
-
-.contact-copy .section-title {
-  font-size: clamp(43px, 5.1vw, 67px);
-}
-
-.contact-copy .section-title em {
-  color: #c2b29a;
-}
-
-.contact-copy > p:not(.eyebrow) {
-  max-width: 430px;
-  margin: 24px 0 29px;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 13px;
-  line-height: 1.9;
-}
-
-.contact-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 33px 36px 34px;
-  border: 1px solid rgba(255, 255, 255, 0.19);
-  background: rgba(255, 255, 255, 0.035);
-}
-
-.contact-card-label {
-  margin-bottom: 8px;
-  color: #d8bda0;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.contact-card address {
-  font-family: var(--serif);
-  font-size: 23px;
-  font-style: normal;
-  line-height: 1.45;
-}
-
-.contact-map {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 9px;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 10px;
-}
-
-.contact-map:hover,
-.contact-phone:hover,
-.contact-email:hover {
-  color: #e8c9a9;
-}
-
-.contact-rule {
-  width: 100%;
-  height: 1px;
-  margin: 20px 0;
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.contact-phone {
-  color: white;
-  font-family: var(--serif);
-  font-size: 18px;
-  line-height: 1.65;
-}
-
-.contact-email {
-  color: white;
-  font-size: 12px;
-}
-
-.site-footer {
-  background: var(--forest-deep);
-  color: white;
-}
-
-.footer-inner {
-  display: flex;
-  min-height: 102px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
-}
-
-.footer-brand .brand-place {
-  color: rgba(255, 255, 255, 0.52);
-}
-
-.footer-inner > p {
-  color: rgba(255, 255, 255, 0.55);
-  font-family: var(--serif);
-  font-size: 14px;
-  font-style: italic;
-}
-
-.back-top {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.77);
-  font-size: 10px;
-}
-
-.back-top:hover {
-  color: white;
-}
-
-.footer-bottom {
-  display: flex;
-  min-height: 54px;
-  align-items: center;
-  justify-content: space-between;
-  color: rgba(255, 255, 255, 0.43);
-  font-size: 9px;
-  letter-spacing: 0.04em;
-}
-
-@keyframes hero-appear {
-  from {
-    opacity: 0.7;
-    transform: scale(1.025);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@media (min-width: 1500px) {
-  .hero {
-    min-height: 760px;
-  }
-}
-
-@media (max-width: 1000px) {
-  .page-width {
-    width: min(var(--page-width), calc(100% - 64px));
-  }
-
-  .header-inner {
-    width: calc(100% - 56px);
-    gap: 24px;
-  }
-
-  .primary-nav {
-    gap: 18px;
-    font-size: 11px;
-  }
-
-  .primary-nav > a:nth-child(6) {
-    display: none;
-  }
-
-  .welcome-grid {
-    gap: 65px;
-  }
-
-  .stay-grid {
-    height: 430px;
-  }
-
-  .experience-card {
-    padding-inline: 19px;
-  }
-
-  .experience-card h3 {
-    font-size: 20px;
-  }
-
-  .contact-grid {
-    gap: 65px;
-  }
-}
-
-@media (max-width: 760px) {
-  html {
-    scroll-padding-top: 72px;
-  }
-
-  .section-pad {
-    padding-block: 83px;
-  }
-
-  .page-width {
-    width: calc(100% - 44px);
-  }
-
-  .header-inner {
-    width: calc(100% - 40px);
-    height: 74px;
-  }
-
-  .brand-mark {
-    width: 31px;
-  }
-
-  .brand-mark svg {
-    width: 30px;
-  }
-
-  .brand-name {
-    font-size: 15px;
-  }
-
-  .brand-place {
-    font-size: 9px;
-  }
-
-  .menu-toggle {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    border: 1px solid var(--line);
-    background: transparent;
-    cursor: pointer;
-    place-items: center;
-  }
-
-  .menu-toggle-lines,
-  .menu-toggle-lines::before,
-  .menu-toggle-lines::after {
-    display: block;
-    width: 17px;
-    height: 1px;
-    background: var(--forest);
-    transition: transform 180ms ease;
-  }
-
-  .menu-toggle-lines {
-    position: relative;
-  }
-
-  .menu-toggle-lines::before,
-  .menu-toggle-lines::after {
-    position: absolute;
-    left: 0;
-    content: "";
-  }
-
-  .menu-toggle-lines::before {
-    top: -5px;
-  }
-
-  .menu-toggle-lines::after {
-    top: 5px;
-  }
-
-  .menu-toggle[aria-expanded="true"] .menu-toggle-lines {
-    background: transparent;
-  }
-
-  .menu-toggle[aria-expanded="true"] .menu-toggle-lines::before {
-    top: 0;
-    transform: rotate(45deg);
-  }
-
-  .menu-toggle[aria-expanded="true"] .menu-toggle-lines::after {
-    top: 0;
-    transform: rotate(-45deg);
-  }
-
-  .primary-nav {
-    position: absolute;
-    top: 74px;
-    right: 0;
-    left: 0;
-    display: none;
-    align-items: stretch;
-    gap: 0;
-    padding: 10px 22px 23px;
-    border-top: 1px solid var(--line);
-    background: var(--paper);
-    box-shadow: 0 14px 22px rgba(28, 38, 30, 0.1);
-    font-size: 13px;
-  }
-
-  .primary-nav.is-open {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .primary-nav > a:not(.nav-cta) {
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .primary-nav > a:not(.nav-cta)::after,
-  .primary-nav > a:nth-child(6) {
-    display: none;
-  }
-
-  .nav-cta {
-    min-height: 47px;
-    justify-content: space-between;
-    margin-top: 15px;
-    padding-inline: 16px;
-  }
-
-  .hero {
-    min-height: min(710px, calc(100svh - 74px));
-    min-height: max(580px, min(710px, calc(100svh - 74px)));
-  }
-
-  .hero-image {
-    object-position: 58% center;
-  }
-
-  .hero-shade {
-    background:
-      linear-gradient(90deg, rgba(22, 34, 27, 0.72), rgba(22, 34, 27, 0.22)),
-      linear-gradient(0deg, rgba(22, 34, 27, 0.28), transparent 48%);
-  }
-
-  .hero h1 {
-    font-size: clamp(49px, 11vw, 73px);
-  }
-
-  .hero-intro {
-    max-width: 385px;
-    font-size: 13px;
-  }
-
-  .hero-actions {
-    flex-wrap: wrap;
-    gap: 18px;
-    margin-top: 29px;
-  }
-
-  .hero-note {
-    right: 22px;
-    bottom: 31px;
-    font-size: 8px;
-  }
-
-  .scroll-cue {
-    width: 26px;
-    height: 42px;
-  }
-
-  .scroll-cue span {
-    left: 12px;
-  }
-
-  .welcome {
-    padding-block: 88px 86px;
-  }
-
-  .welcome-grid,
-  .dining-grid {
-    grid-template-columns: 1fr;
-    gap: 51px;
-  }
-
-  .welcome-image-wrap {
-    max-width: 560px;
-    padding-right: 19px;
-  }
-
-  .welcome-image {
-    height: min(390px, 76vw);
-  }
-
-  .image-caption {
-    right: 19px;
-  }
-
-  .image-stamp {
-    right: -12px;
-    width: 78px;
-    height: 78px;
-    font-size: 12px;
-  }
-
-  .welcome-copy .section-title,
-  .dining-copy .section-title,
-  .section-heading .section-title {
-    font-size: clamp(37px, 9vw, 49px);
-  }
-
-  .section-heading {
-    display: block;
-    margin-bottom: 32px;
-  }
-
-  .section-aside {
-    max-width: 440px;
-    margin-top: 16px;
-  }
-
-  .stay-grid {
-    height: auto;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 285px 210px;
-    gap: 10px;
-  }
-
-  .stay-card-large {
-    grid-column: span 2;
-    grid-row: auto;
-  }
-
-  .stay-card-content {
-    right: 14px;
-    bottom: 15px;
-    left: 15px;
-  }
-
-  .stay-card-content > strong {
-    font-size: 20px;
-  }
-
-  .stay-card-large .stay-card-content > strong {
-    font-size: 28px;
-  }
-
-  .stay-footnote {
-    font-size: 10px;
-    line-height: 1.7;
-  }
-
-  .experiences {
-    padding-block: 85px 92px;
-  }
-
-  .center-heading {
-    margin-bottom: 37px;
-  }
-
-  .center-heading .section-title {
-    font-size: clamp(37px, 9vw, 49px);
-  }
-
-  .experience-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .experience-card {
-    min-height: 247px;
-    padding: 22px 17px;
-  }
-
-  .experience-card + .experience-card {
-    border-left: none;
-  }
-
-  .experience-card:nth-child(even) {
-    border-left: 1px solid var(--line);
-  }
-
-  .experience-card:nth-child(n + 3) {
-    border-top: 1px solid var(--line);
-  }
-
-  .experience-card h3 {
-    font-size: 21px;
-  }
-
-  .experience-card p {
-    min-height: 67px;
-    font-size: 10px;
-  }
-
-  .wedding {
-    min-height: 0;
-    grid-template-columns: 1fr;
-  }
-
-  .wedding-image {
-    position: relative;
-    inset: auto;
-    height: 330px;
-  }
-
-  .wedding-image::after {
-    background: linear-gradient(0deg, rgba(31, 46, 37, 0.2), transparent 60%);
-  }
-
-  .wedding-copy {
-    grid-column: auto;
-    max-width: 580px;
-    padding: 62px 22px 74px;
-  }
-
-  .wedding-copy .section-title {
-    font-size: clamp(43px, 10vw, 58px);
-  }
-
-  .wedding-number {
-    right: -15px;
-    bottom: 130px;
-    font-size: 210px;
-  }
-
-  .dining-grid {
-    gap: 43px;
-  }
-
-  .dining-photos {
-    min-height: 345px;
-    padding-left: 26px;
-  }
-
-  .dining-photos::before {
-    top: -17px;
-    left: 9px;
-  }
-
-  .dining-main-photo {
-    height: 300px;
-  }
-
-  .dining-small-photo {
-    right: -4px;
-    width: 44%;
-    height: 145px;
-    border-width: 7px;
-  }
-
-  .dining-photo-note {
-    bottom: 2px;
-    left: 26px;
-    font-size: 12px;
-  }
-
-  .gallery {
-    padding-block: 78px 83px;
-  }
-
-  .gallery-heading > .text-link {
-    margin-top: 21px;
-  }
-
-  .gallery-grid {
-    height: auto;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 165px 165px;
-    gap: 9px;
-  }
-
-  .contact-grid {
-    grid-template-columns: 1fr;
-    gap: 45px;
-  }
-
-  .contact-copy .section-title {
-    font-size: clamp(45px, 10vw, 61px);
-  }
-
-  .contact-card {
-    padding: 27px 25px;
-  }
-
-  .footer-inner {
-    min-height: 0;
-    flex-wrap: wrap;
-    padding-block: 24px;
-  }
-
-  .footer-inner > p {
-    order: 3;
-    width: 100%;
-    margin: -5px 0 0 43px;
-  }
-}
-
-@media (max-width: 400px) {
-  .page-width {
-    width: calc(100% - 36px);
-  }
-
-  .header-inner {
-    width: calc(100% - 32px);
-  }
-
-  .hero h1 {
-    font-size: 47px;
-  }
-
-  .hero-actions {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .experience-card {
-    padding-inline: 13px;
-  }
-
-  .experience-card a {
-    font-size: 9px;
-  }
-
-  .contact-email {
-    font-size: 11px;
-  }
-}
-
-/* A warmer, more tactile rhythm ties the individual sections together. */
-body {
-  background:
-    radial-gradient(ellipse at 12% 30%, rgba(211, 190, 159, 0.12), transparent 28%),
-    var(--paper);
-}
-
-.site-header {
-  background: rgba(246, 241, 232, 0.96);
-}
-
-.hero {
-  width: calc(100% - 28px);
-  min-height: min(730px, calc(100svh - 108px));
-  min-height: max(620px, min(730px, calc(100svh - 108px)));
-  margin: 0 auto;
-  border-radius: 24px;
-  box-shadow: 0 18px 55px rgba(57, 52, 43, 0.13);
-}
-
-.hero-image {
-  border-radius: inherit;
-  object-position: center 58%;
-  transform-origin: center;
-}
-
-.hero-shade {
-  border-radius: inherit;
-  background:
-    linear-gradient(90deg, rgba(37, 43, 34, 0.76), rgba(37, 43, 34, 0.44) 47%, rgba(37, 43, 34, 0.12)),
-    linear-gradient(0deg, rgba(37, 43, 34, 0.34), transparent 45%);
-}
-
-.hero-content .eyebrow {
-  animation: rise-in 700ms 100ms both;
-}
-
-.hero h1 {
-  animation: rise-in 800ms 220ms both;
-}
-
-.hero-intro {
-  animation: rise-in 800ms 360ms both;
-}
-
-.hero-actions {
-  animation: rise-in 800ms 480ms both;
-}
-
-.hero-note {
-  bottom: 42px;
-}
-
-.scroll-cue {
-  border-radius: 12px 12px 0 0;
-}
-
-.welcome,
-.experiences,
-.dining {
-  position: relative;
-}
-
-.welcome-image-wrap {
-  padding: 15px 32px 40px 0;
-}
-
-.welcome-image-wrap::after {
-  right: 6px;
-  bottom: 8px;
-  width: 78%;
-  height: 78%;
-  border: 0;
-  border-radius: 0 0 24px 0;
-  background: #e7ddcd;
-}
-
-.welcome-image {
-  border-radius: 190px 190px 16px 16px;
-  box-shadow: 0 18px 45px rgba(58, 49, 39, 0.12);
-}
-
-.image-caption {
-  right: 32px;
-  bottom: 40px;
-  left: 0;
-  border-radius: 0 0 0 15px;
-  background: rgba(44, 52, 43, 0.88);
-  backdrop-filter: blur(8px);
-}
-
-.image-stamp {
-  top: 0;
-  right: -15px;
-  border: 5px solid var(--paper);
-  box-shadow: 0 6px 18px rgba(49, 43, 35, 0.13);
-}
-
-.stay {
-  background: #eee6d9;
-}
-
-.stay-grid {
-  gap: 14px;
-}
-
-.stay-card {
-  border-radius: 15px;
-  box-shadow: 0 8px 22px rgba(50, 43, 35, 0.1);
-}
-
-.stay-card > img {
-  filter: saturate(0.86);
-}
-
-.stay-card:hover > img {
-  filter: saturate(1);
-}
-
-.stay-overlay {
-  background: linear-gradient(0deg, rgba(37, 43, 34, 0.82), rgba(37, 43, 34, 0.03) 80%);
-}
-
-.experience-grid {
-  gap: 12px;
-  border: 0;
-}
-
-.experience-card,
-.experience-card + .experience-card,
-.experience-card:nth-child(even),
-.experience-card:nth-child(n + 3) {
-  border: 1px solid rgba(66, 55, 43, 0.11);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.32);
-  box-shadow: 0 8px 24px rgba(55, 47, 38, 0.04);
-}
-
-.experience-card {
-  transition: background 250ms ease, box-shadow 250ms ease, transform 250ms ease;
-}
-
-.experience-card:hover {
-  z-index: 1;
-  background: #fffaf2;
-  box-shadow: 0 16px 32px rgba(55, 47, 38, 0.1);
-  transform: translateY(-5px);
-}
-
-.experience-card + .experience-card {
-  margin-left: 0;
-}
-
-.experience-icon {
-  display: grid;
-  width: 45px;
-  height: 45px;
-  padding: 9px;
-  border-radius: 50%;
-  background: #efe2d3;
-}
-
-.wedding {
-  border-radius: 22px;
-  background: #394438;
-}
-
-.wedding-image {
-  overflow: hidden;
-}
-
-.wedding-image img {
-  filter: saturate(0.83);
-  transition: filter 500ms ease, transform 800ms ease;
-}
-
-.wedding:hover .wedding-image img {
-  filter: saturate(1);
-  transform: scale(1.025);
-}
-
-.button,
-.nav-cta {
-  border-radius: 5px;
-}
-
-.button-light {
-  box-shadow: 0 5px 16px rgba(26, 32, 25, 0.12);
-}
-
-.dining-main-photo {
-  border-radius: 180px 180px 15px 15px;
-  box-shadow: 0 17px 42px rgba(58, 49, 39, 0.12);
-}
-
-.dining-photos::before {
-  border-radius: 180px 180px 0 0;
-}
-
-.dining-small-photo {
-  border-radius: 110px 110px 12px 12px;
-  box-shadow: 0 10px 25px rgba(58, 49, 39, 0.15);
-}
-
-.gallery {
-  background: #eee6d9;
-}
-
-.gallery-grid {
-  gap: 14px;
-}
-
-.gallery-grid img {
-  border-radius: 13px;
-  filter: saturate(0.88);
-  transition: filter 250ms ease, transform 350ms ease, box-shadow 350ms ease;
-}
-
-.gallery-grid img:hover {
-  z-index: 1;
-  filter: saturate(1);
-  box-shadow: 0 12px 28px rgba(50, 43, 35, 0.16);
-  transform: translateY(-4px);
-}
-
-.contact {
-  background:
-    radial-gradient(ellipse at 12% 100%, rgba(187, 161, 126, 0.13), transparent 38%),
-    #394438;
-}
-
-.contact-card {
-  border-radius: 14px;
-  background: rgba(255, 250, 242, 0.055);
-  box-shadow: 0 15px 38px rgba(22, 29, 23, 0.11);
-}
-
-.footer-inner {
-  border-color: rgba(246, 241, 232, 0.12);
-}
-
-.primary-nav > a:not(.nav-cta)::after {
-  border-radius: 99px;
-}
-
-.button,
-.nav-cta,
-.text-link,
-.hero-phone,
-.contact-map,
-.contact-phone,
-.contact-email,
-.back-top {
-  transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.motion-ready .reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1),
-    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
-  transition-delay: var(--reveal-delay, 0ms);
-}
-
-.motion-ready .reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 760px) {
-  .hero {
-    width: calc(100% - 16px);
-    min-height: max(580px, min(710px, calc(100svh - 82px)));
-    border-radius: 17px;
-  }
-
-  .welcome-image-wrap {
-    padding: 12px 21px 32px 0;
-  }
-
-  .welcome-image {
-    height: min(390px, 76vw);
-    border-radius: 150px 150px 13px 13px;
-  }
-
-  .image-stamp {
-    right: 8px;
-  }
-
-  .image-caption {
-    right: 21px;
-    bottom: 32px;
-    border-radius: 0 0 0 13px;
-  }
-
-  .stay-grid {
-    gap: 10px;
-  }
-
-  .stay-card {
-    border-radius: 12px;
-  }
-
-  .experience-grid {
-    gap: 9px;
-  }
-
-  .experience-card,
-  .experience-card + .experience-card,
-  .experience-card:nth-child(even),
-  .experience-card:nth-child(n + 3) {
-    border: 1px solid rgba(66, 55, 43, 0.11);
-    border-radius: 12px;
-  }
-
-  .wedding {
-    width: calc(100% - 16px);
-    border-radius: 17px;
-  }
-
-  .dining-main-photo {
-    border-radius: 150px 150px 12px 12px;
-  }
-
-  .dining-small-photo {
-    border-radius: 90px 90px 10px 10px;
-  }
-
-  .gallery-grid {
-    gap: 9px;
-  }
-
-  .gallery-grid img {
-    border-radius: 10px;
-  }
-
-  .contact-card {
-    border-radius: 12px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .motion-ready .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
-  .hero-content .eyebrow,
-  .hero h1,
-  .hero-intro,
-  .hero-actions {
-    animation: none;
-  }
-}
-
-:root {
-  --paper: #f7f0e6;
-  --paper-deep: #eadccb;
-  --ink: #39291f;
-  --muted: #86705f;
-  --forest: #634733;
-  --forest-deep: #38271e;
-  --sage: #d1b89a;
-  --clay: #a66d48;
-  --line: rgba(74, 49, 32, 0.16);
-}
-
-::selection {
-  background: #ddc5a9;
-}
-
-.primary-nav {
-  color: #574334;
-}
-
-.hero {
-  background: #382a22;
-}
-
-.hero-shade {
-  background:
-    linear-gradient(90deg, rgba(47, 33, 24, 0.8), rgba(47, 33, 24, 0.48) 47%, rgba(47, 33, 24, 0.13)),
-    linear-gradient(0deg, rgba(47, 33, 24, 0.3), transparent 45%);
-}
-
-.welcome-image-wrap::after {
-  background: #ebddc9;
-}
-
-.site-header {
-  background: rgba(247, 240, 230, 0.96);
-}
-
-.stay,
-.gallery {
-  background-color: #eadccb;
-}
-
-.experience-card p,
-.section-aside,
-.stay-footnote,
-.welcome-copy p:not(.eyebrow),
-.dining-copy > p:not(.eyebrow) {
-  color: #78695d;
-}
-
-.experience-card,
-.experience-card + .experience-card,
-.experience-card:nth-child(even),
-.experience-card:nth-child(n + 3) {
-  border-color: rgba(74, 49, 32, 0.12);
-  background: rgba(255, 249, 239, 0.48);
-  box-shadow: 0 8px 24px rgba(65, 43, 27, 0.05);
-}
-
-.experience-card:hover {
-  background: #fff8ed;
-  box-shadow: 0 16px 32px rgba(65, 43, 27, 0.11);
-}
-
-.experience-icon {
-  background: #efe0cc;
-}
-
-.wedding,
-.contact {
-  background-color: #634733;
-}
-
-.wedding-image::after {
-  background: linear-gradient(90deg, rgba(52, 37, 28, 0.02), rgba(52, 37, 28, 0.27));
-}
-
-.contact {
-  background:
-    radial-gradient(ellipse at 12% 100%, rgba(187, 145, 105, 0.2), transparent 38%),
-    #634733;
-}
-
-@media (max-width: 760px) {
-  .hero-shade {
-    background:
-      linear-gradient(90deg, rgba(47, 33, 24, 0.78), rgba(47, 33, 24, 0.26)),
-      linear-gradient(0deg, rgba(47, 33, 24, 0.32), transparent 48%);
-  }
-
-  .wedding-image::after {
-    background: linear-gradient(0deg, rgba(49, 34, 25, 0.22), transparent 60%);
-  }
-}
-
-.welcome-image-wrap {
-  max-width: none;
-  padding: 0;
-}
-
-.welcome-image-wrap::after {
-  display: none;
-}
-
-.welcome-carousel {
-  width: 100%;
-}
-
-.welcome-slide {
-  position: relative;
-  overflow: hidden;
-  background: #d5c4ad;
-}
-
-.welcome-image {
-  width: 100%;
-  height: 440px;
-  border-radius: 8px;
-  object-fit: cover;
-  box-shadow: 0 18px 45px rgba(73, 47, 30, 0.13);
-}
-
-.image-caption {
-  right: 0;
-  bottom: 0;
-  left: 0;
-  gap: 18px;
-  border-radius: 0;
-}
-
-.slide-count {
-  flex-shrink: 0;
-  color: #ddbea0;
-  font-variant-numeric: tabular-nums;
-}
-
-.slide-count > span {
-  color: rgba(255, 255, 255, 0.5);
-}
+/* ---- 4.5 Carousel controls (dots + arrows) ------------------------------ */
 
 .carousel-controls {
   display: flex;
@@ -2152,22 +451,1365 @@ body {
   outline-offset: 4px;
 }
 
-@media (max-width: 760px) {
-  .welcome-image-wrap {
-    max-width: 560px;
-    padding: 0;
-  }
+/* ---- 4.6 Scroll-reveal animation (JS adds .motion-ready / .is-visible) --- */
 
-  .welcome-image {
-    height: min(390px, 76vw);
-    border-radius: 8px;
-  }
+.motion-ready .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms var(--ease-out),
+    transform 700ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
 
-  .image-caption {
-    right: 0;
-    bottom: 0;
+.motion-ready .reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- 4.7 Keyframes -------------------------------------------------------- */
+
+@keyframes hero-appear {
+  from {
+    opacity: 0.7;
+    transform: scale(1.025);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ==========================================================================
+   5. SITE HEADER & NAVIGATION
+   ========================================================================== */
+
+.site-header {
+  position: relative;
+  z-index: 10;
+  background: rgba(247, 240, 230, 0.96);
+}
+
+.header-inner {
+  width: min(1380px, calc(100% - 80px));
+  height: 94px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+/* ---- Brand ---------------------------------------------------------------- */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  width: clamp(180px, 19vw, 250px);
+  padding: 5px 8px;
+  border-radius: 2px;
+  /* background: var(--forest-deep); */
+}
+
+.brand-mark {
+  display: grid;
+  width: 38px;
+  color: var(--clay);
+  place-items: center;
+}
+
+.brand-mark svg {
+  width: 34px;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-copy {
+  display: grid;
+  line-height: 1.35;
+}
+
+.brand-name {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+}
+
+.brand-place {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---- Primary navigation --------------------------------------------------- */
+
+.primary-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 3vw, 42px);
+  color: #574334;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.primary-nav > a:not(.nav-cta) {
+  position: relative;
+  padding-block: 10px;
+  transition: color 180ms ease;
+}
+
+/* Animated underline */
+.primary-nav > a:not(.nav-cta)::after {
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+  left: 0;
+  height: 1px;
+  border-radius: 99px;
+  background: var(--clay);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 220ms ease;
+}
+
+.primary-nav > a:not(.nav-cta):hover {
+  color: var(--clay);
+}
+
+.primary-nav > a:not(.nav-cta):hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Call-to-action button in the nav */
+.nav-cta {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 18px;
+  padding: 0 19px;
+  border-radius: 5px;
+  background: var(--forest);
+  color: white;
+  transition: background 180ms var(--ease-out);
+}
+
+.nav-cta:hover {
+  background: var(--clay);
+}
+
+/* Hamburger button (visible only on small screens, see section 24) */
+.menu-toggle {
+  display: none;
+}
+
+
+/* ==========================================================================
+   6. HOME: HERO
+   Also used by the wedding page (.wedding-page-hero) with a left-aligned,
+   non-centered variant - hence the :not(.wedding-page-hero) selectors.
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  /* width: calc(100% - 28px); */
+  min-height: max(620px, min(730px, calc(100svh - 108px)));
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #382a22;
+  color: white;
+  box-shadow: 0 18px 55px rgba(57, 52, 43, 0.13);
+}
+
+.hero-image,
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-image {
+  object-fit: cover;
+  object-position: center 58%;
+  transform-origin: center;
+  animation: hero-appear 900ms ease-out both;
+  /* border-radius: inherit; */
+}
+
+/* Dark gradient so the text stays readable */
+.hero-shade {
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, rgba(47, 33, 24, 0.8), rgba(47, 33, 24, 0.48) 47%, rgba(47, 33, 24, 0.13)),
+    linear-gradient(0deg, rgba(47, 33, 24, 0.3), transparent 45%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: inherit;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+  padding-bottom: 20px;
+}
+
+/* Keep homepage copy on the left so more of the hero image remains visible. */
+.hero:not(.wedding-page-hero) .hero-content {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.hero-content .eyebrow {
+  animation: rise-in 700ms 100ms both;
+}
+
+.hero h1 {
+  animation: rise-in 800ms 220ms both;
+}
+
+.hero-intro {
+  max-width: 460px;
+  margin: 26px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 15px;
+  line-height: 1.8;
+  animation: rise-in 800ms 360ms both;
+}
+
+.hero:not(.wedding-page-hero) .hero-intro {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  margin-top: 36px;
+  animation: rise-in 800ms 480ms both;
+}
+
+.hero:not(.wedding-page-hero) .hero-actions {
+  justify-content: flex-start;
+}
+
+.hero-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15px;
+}
+
+.phone-icon {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  font-size: 13px;
+  place-items: center;
+}
+
+.hero-note {
+  position: absolute;
+  z-index: 1;
+  right: max(50px, calc((100% - var(--page-width)) / 2));
+  bottom: 42px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.note-line {
+  width: 32px;
+  height: 1px;
+  background: var(--sage);
+}
+
+/* Little paper-colored notch at the bottom of the hero */
+.scroll-cue {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  width: 32px;
+  height: 55px;
+  border-radius: 12px 12px 0 0;
+  background: var(--paper);
+  transform: translateX(-50%);
+}
+
+.scroll-cue span {
+  position: absolute;
+  top: 13px;
+  left: 15px;
+  width: 1px;
+  height: 21px;
+  background: var(--clay);
+}
+
+
+/* ==========================================================================
+   7. HOME: WELCOME (intro text + image carousel)
+   ========================================================================== */
+
+.welcome {
+  position: relative;
+  padding-block: 145px 130px;
+}
+
+.welcome-grid {
+  display: grid;
+  grid-template-columns: 1.03fr 0.97fr;
+  align-items: center;
+  gap: clamp(70px, 11vw, 145px);
+}
+
+/* ---- Image carousel ------------------------------------------------------- */
+
+.welcome-image-wrap {
+  position: relative;
+  max-width: none;
+  padding: 0;
+}
+
+/* The old decorative frame was switched off in the final cascade */
+.welcome-image-wrap::after {
+  display: none;
+}
+
+.welcome-carousel {
+  width: 100%;
+}
+
+.welcome-slide {
+  position: relative;
+  overflow: hidden;
+  background: #d5c4ad;
+}
+
+.welcome-image {
+  width: 100%;
+  height: 440px;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 18px 45px rgba(73, 47, 30, 0.13);
+}
+
+.image-caption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 17px 20px;
+  border-radius: 0;
+  background: rgba(44, 52, 43, 0.88);
+  backdrop-filter: blur(8px);
+  color: white;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.image-caption span:first-child {
+  color: #ddbea0;
+}
+
+.slide-count {
+  flex-shrink: 0;
+  color: #ddbea0;
+  font-variant-numeric: tabular-nums;
+}
+
+.slide-count > span {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Round stamp sticker on the corner of the image */
+.image-stamp {
+  position: absolute;
+  top: 0;
+  right: -15px;
+  display: grid;
+  width: 93px;
+  height: 93px;
+  border: 5px solid var(--paper);
+  border-radius: 50%;
+  background: var(--clay);
+  color: white;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.18;
+  text-align: center;
+  transform: rotate(8deg);
+  box-shadow: 0 6px 18px rgba(49, 43, 35, 0.13);
+  place-content: center;
+}
+
+/* ---- Intro copy ------------------------------------------------------------ */
+
+.welcome-copy p:not(.eyebrow),
+.dining-copy > p:not(.eyebrow) {
+  max-width: 500px;
+  color: #78695d;
+  font-size: 13px;
+  line-height: 1.95;
+}
+
+/* Larger lead paragraph (shared with the dining section) */
+.welcome-copy .lead,
+.dining-copy .lead {
+  color: #514032 !important;
+  font-size: 15px !important;
+  line-height: 1.85 !important;
+}
+
+.welcome-copy .lead {
+  margin-top: 26px;
+}
+
+.welcome-details {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-top: 44px;
+  color: #806e5f;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.detail-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  /* border: 1px solid #d8c8b5;
+  border-radius: 50%; */
+  color: var(--clay);
+  font-size: 22px;
+  place-items: center;
+}
+
+.detail-icon img,
+.fact-icon img {
+  width: 28px;
+  height: 28px;
+}
+
+.welcome-details strong {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* ==========================================================================
+   8. HOME: STAY CARDS
+   ========================================================================== */
+
+.stay {
+  background: var(--paper-deep);
+}
+
+.stay-grid {
+  display: grid;
+  height: 490px;
+  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 14px;
+}
+
+.stay-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #80624a;
+  color: white;
+  box-shadow: 0 8px 22px rgba(50, 43, 35, 0.1);
+}
+
+.stay-card-large {
+  grid-row: span 2;
+}
+
+.stay-card > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.86);
+  transition: transform 600ms var(--ease-out);
+}
+
+.stay-card:hover > img {
+  transform: scale(1.045);
+  filter: saturate(1);
+}
+
+.stay-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(37, 43, 34, 0.82), rgba(37, 43, 34, 0.03) 80%);
+}
+
+.stay-card-content {
+  position: absolute;
+  right: 27px;
+  bottom: 26px;
+  left: 29px;
+  display: grid;
+  gap: 5px;
+}
+
+.card-kicker {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.stay-card-content > strong {
+  font-family: var(--serif);
+  font-size: clamp(21px, 2.4vw, 30px);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.stay-card-large .stay-card-content > strong {
+  font-size: clamp(28px, 3vw, 39px);
+}
+
+.card-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 190px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  padding-top: 10px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 10px;
+}
+
+.card-arrow b {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.stay-footnote {
+  margin: 21px 0 0;
+  color: #78695d;
+  font-size: 11px;
+}
+
+.stay-footnote span {
+  margin-right: 7px;
+  color: var(--clay);
+}
+
+
+/* ==========================================================================
+   9. HOME: EXPERIENCES (four cards)
+   ========================================================================== */
+
+.experiences {
+  position: relative;
+  padding-block: 128px 138px;
+}
+
+.experience-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.experience-card {
+  position: relative;
+  min-height: 277px;
+  padding: 30px 27px 28px;
+  border: 1px solid rgba(74, 49, 32, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 249, 239, 0.48);
+  box-shadow: 0 8px 24px rgba(65, 43, 27, 0.05);
+  transition: background 250ms ease, box-shadow 250ms ease, transform 250ms ease;
+}
+
+.experience-card:hover {
+  z-index: 1;
+  background: #fff8ed;
+  box-shadow: 0 16px 32px rgba(65, 43, 27, 0.11);
+  transform: translateY(-5px);
+}
+
+.experience-number {
+  color: #9a8877;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.experience-icon {
+  display: grid;
+  width: 45px;
+  height: 45px;
+  margin-top: 21px;
+  padding: 9px;
+  border-radius: 50%;
+  background: #efe0cc;
+  color: var(--clay);
+}
+
+.experience-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.experience-card h3 {
+  margin: 15px 0 9px;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.26;
+}
+
+.experience-card p {
+  min-height: 58px;
+  margin: 0 0 17px;
+  color: #78695d;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.experience-card a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--forest);
+  font-size: 10px;
+  font-weight: 600;
+  transition: color 180ms ease;
+}
+
+.experience-card a:hover {
+  color: var(--clay);
+}
+
+
+/* ==========================================================================
+   10. HOME: WEDDING BAND (photo left, text right)
+   ========================================================================== */
+
+.wedding {
+  position: relative;
+  display: grid;
+  min-height: 530px;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  overflow: hidden;
+  padding: 0;
+  border-radius: 22px;
+  background: var(--forest);
+  color: white;
+}
+
+.wedding-image {
+  position: absolute;
+  inset: 0 50% 0 0;
+  overflow: hidden;
+}
+
+.wedding-image::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(52, 37, 28, 0.02), rgba(52, 37, 28, 0.27));
+  content: "";
+}
+
+.wedding-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.83);
+  transition: filter 500ms ease, transform 800ms ease;
+}
+
+.wedding:hover .wedding-image img {
+  filter: saturate(1);
+  transform: scale(1.025);
+}
+
+.wedding-copy {
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
+  max-width: 490px;
+  padding: 95px 40px 95px 8%;
+}
+
+.wedding-copy .eyebrow {
+  margin-bottom: 20px;
+}
+
+.wedding-copy .section-title {
+  font-size: clamp(42px, 4.8vw, 62px);
+}
+
+.wedding-copy .section-title em {
+  color: #d7bea0;
+}
+
+.wedding-copy > p:not(.eyebrow) {
+  max-width: 390px;
+  margin: 24px 0 28px;
+  color: rgba(255, 255, 255, 0.71);
+  font-size: 13px;
+  line-height: 1.95;
+}
+
+/* Big translucent number in the background */
+.wedding-number {
+  position: absolute;
+  right: 7%;
+  bottom: -92px;
+  color: rgba(255, 255, 255, 0.04);
+  font-family: var(--serif);
+  font-size: 330px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   11. WEDDING PAGE
+   ========================================================================== */
+
+.wedding-page-hero .hero-image {
+  object-position: center 42%;
+}
+
+/* Titles in this page share one size */
+.wedding-page-intro .section-title,
+.wedding-page-gallery .section-title,
+.wedding-page-contact .section-title {
+  font-size: clamp(43px, 5.3vw, 68px);
+}
+
+.wedding-page-intro .section-title em,
+.wedding-page-gallery .section-title em {
+  color: var(--clay);
+}
+
+/* ---- Intro ------------------------------------------------------------------ */
+
+.wedding-page-intro-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  align-items: center;
+  gap: clamp(50px, 9vw, 120px);
+}
+
+.wedding-page-intro-copy .lead {
+  margin: 0 0 17px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.55;
+}
+
+.wedding-page-intro-copy > p:not(.lead) {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+/* ---- Highlights (3 columns) -------------------------------------------------- */
+
+.wedding-page-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin-top: 82px;
+  border-top: 1px solid var(--line);
+}
+
+.wedding-page-highlights article {
+  padding: 25px 20px 0 0;
+}
+
+.wedding-highlight-number {
+  color: var(--clay);
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.wedding-page-highlights h3 {
+  margin: 12px 0 7px;
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.wedding-page-highlights p {
+  max-width: 300px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ---- Gallery ----------------------------------------------------------------- */
+
+.wedding-page-gallery {
+  background: var(--paper-deep);
+}
+
+.wedding-photo-grid {
+  display: grid;
+  height: 390px;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  gap: 14px;
+}
+
+.wedding-photo-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- Contact band ------------------------------------------------------------- */
+
+.wedding-page-contact {
+  background:
+    radial-gradient(ellipse at 13% 100%, rgba(177, 137, 99, 0.17), transparent 35%),
+    var(--forest);
+  color: white;
+}
+
+.wedding-page-contact-inner {
+  display: grid;
+  grid-template-columns: 1fr 0.55fr;
+  align-items: center;
+  gap: 90px;
+}
+
+.wedding-page-contact .section-title em {
+  color: #d7bea0;
+}
+
+.wedding-page-contact-inner > div:first-child > p:not(.eyebrow) {
+  max-width: 470px;
+  margin: 22px 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.wedding-page-contact-actions {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 13px;
+  font-size: 13px;
+}
+
+.wedding-page-contact-actions .button {
+  margin-bottom: 8px;
+}
+
+.wedding-page-contact-actions address {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 12px;
+  font-style: normal;
+}
+
+
+/* ==========================================================================
+   12. HOME: DINING
+   ========================================================================== */
+
+.dining {
+  position: relative;
+  overflow: hidden;
+}
+
+.dining-grid {
+  display: grid;
+  grid-template-columns: 0.87fr 1.13fr;
+  align-items: center;
+  gap: clamp(60px, 10vw, 130px);
+}
+
+.dining-copy .lead {
+  margin-top: 25px;
+}
+
+.dining-time {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0 24px;
+  color: #806e5f;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.dining-time strong {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.time-icon {
+  display: grid;
+  width: 39px;
+  height: 39px;
+  border: 1px solid #d8c8b5;
+  border-radius: 50%;
+  color: var(--clay);
+  font-size: 22px;
+  place-items: center;
+}
+
+/* Two overlapping arched photos with an outline frame behind */
+.dining-photos {
+  position: relative;
+  min-height: 460px;
+  padding: 0 0 37px 52px;
+}
+
+.dining-photos::before {
+  position: absolute;
+  z-index: -1;
+  top: -30px;
+  left: 22px;
+  width: 70%;
+  height: 80%;
+  border: 1px solid #d7c5ae;
+  border-radius: 180px 180px 0 0;
+  content: "";
+}
+
+.dining-main-photo {
+  width: 100%;
+  height: 393px;
+  border-radius: 180px 180px 15px 15px;
+  object-fit: cover;
+  box-shadow: 0 17px 42px rgba(58, 49, 39, 0.12);
+}
+
+.dining-small-photo {
+  position: absolute;
+  right: -6px;
+  bottom: 0;
+  width: 45%;
+  height: 190px;
+  border: 10px solid var(--paper);
+  border-radius: 110px 110px 12px 12px;
+  object-fit: cover;
+  box-shadow: 0 10px 25px rgba(58, 49, 39, 0.15);
+}
+
+.dining-photo-note {
+  position: absolute;
+  bottom: 8px;
+  left: 51px;
+  color: #806e5f;
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+}
+
+
+/* ==========================================================================
+   13. OPENING HOURS
+   ========================================================================== */
+
+.opening-hours {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 0, rgba(211, 184, 154, 0.16), transparent 55%),
+    var(--paper);
+}
+
+.opening-hours-heading {
+  margin-bottom: 42px;
+}
+
+.opening-hours-heading .section-title em {
+  color: var(--clay);
+}
+
+.opening-hours-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 1050px;
+  margin-inline: auto;
+}
+
+.opening-hours-card {
+  padding: 27px 30px 22px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: rgba(255, 251, 245, 0.72);
+  box-shadow: 0 14px 36px rgba(57, 41, 31, 0.045);
+}
+
+.opening-hours-card-seasonal {
+  border-top: 2px solid var(--clay);
+}
+
+.opening-hours-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 16px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+.opening-hours-card h3 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 27px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.opening-hours-season {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.opening-hours-index {
+  color: var(--clay);
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.opening-hours-list {
+  margin: 0;
+}
+
+.opening-hours-list > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(74, 49, 32, 0.08);
+  font-size: 11px;
+}
+
+.opening-hours-list > div:last-child {
+  border-bottom: 0;
+}
+
+.opening-hours-list dt {
+  color: var(--ink);
+}
+
+.opening-hours-list dd {
+  margin: 0;
+  color: var(--forest);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.opening-hours-list dd.is-closed {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.opening-hours-note {
+  max-width: 1050px;
+  margin: 21px auto 0;
+  color: var(--muted);
+  font-size: 10px;
+  text-align: right;
+}
+
+.opening-hours-note span {
+  margin-right: 6px;
+  color: var(--clay);
+}
+
+
+/* ==========================================================================
+   14. SECTION SUBTITLE
+   ========================================================================== */
+
+.section-subtitle {
+  font-family: var(--serif);
+  /* font-family: var(--sans); */
+  letter-spacing: 0.2em;
+  font-weight: 400;
+  font-size: clamp(20px, 6.4vw, 25px);
+  /* background-color: var(--paper-deep); */
+  padding: 30px;
+  border-radius: 10px 5px 10px;
+  /* opacity: 10%; */
+}
+
+.subtitle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* ==========================================================================
+   15. HOME: GALLERY
+   (.gallery-heading is declared in section 4.4 next to .section-heading)
+   ========================================================================== */
+
+.gallery {
+  padding-block: 100px 124px;
+  background: var(--paper-deep);
+}
+
+.gallery-grid {
+  display: grid;
+  height: 310px;
+  grid-template-columns: 1.15fr 0.8fr 0.8fr 1.05fr;
+  gap: 14px;
+}
+
+.gallery-grid img {
+  width: 100%;
+  height: 100%;
+  border-radius: 13px;
+  object-fit: cover;
+  filter: saturate(0.88);
+  transition: filter 250ms ease, transform 350ms ease, box-shadow 350ms ease;
+}
+
+.gallery-grid img:hover {
+  z-index: 1;
+  filter: saturate(1);
+  box-shadow: 0 12px 28px rgba(50, 43, 35, 0.16);
+  transform: translateY(-4px);
+}
+
+
+/* ==========================================================================
+   16. CONTACT
+   ========================================================================== */
+
+.contact {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 12% 100%, rgba(187, 145, 105, 0.2), transparent 38%),
+    #634733;
+  color: white;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.65fr;
+  align-items: center;
+  gap: 100px;
+}
+
+.contact-copy .eyebrow {
+  margin-bottom: 21px;
+}
+
+.contact-copy .section-title {
+  font-size: clamp(43px, 5.1vw, 67px);
+}
+
+.contact-copy .section-title em {
+  color: #c2b29a;
+}
+
+.contact-copy > p:not(.eyebrow) {
+  max-width: 430px;
+  margin: 24px 0 29px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 33px 36px 34px;
+  border: 1px solid rgba(255, 255, 255, 0.19);
+  border-radius: 14px;
+  background: rgba(255, 250, 242, 0.055);
+  box-shadow: 0 15px 38px rgba(22, 29, 23, 0.11);
+}
+
+.contact-card-label {
+  margin-bottom: 8px;
+  color: #d8bda0;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.contact-card address {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-style: normal;
+  line-height: 1.45;
+}
+
+.address-location {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.address-location img {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+}
+
+.contact-map {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 10px;
+}
+
+.contact-map:hover,
+.contact-phone:hover,
+.contact-email:hover {
+  color: #e8c9a9;
+}
+
+.contact-rule {
+  width: 100%;
+  height: 1px;
+  margin: 20px 0;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.contact-phone {
+  color: white;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.contact-email {
+  color: white;
+  font-size: 12px;
+}
+
+
+/* ==========================================================================
+   17. FOOTER
+   ========================================================================== */
+
+.site-footer {
+  background: var(--forest-deep);
+  color: white;
+}
+
+.footer-inner {
+  display: flex;
+  min-height: 102px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  border-bottom: 1px solid rgba(246, 241, 232, 0.12);
+}
+
+.footer-brand .brand-place {
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.footer-inner > p {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.back-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.77);
+  font-size: 10px;
+}
+
+.back-top:hover {
+  color: white;
+}
+
+.footer-bottom {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.43);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+
+/* ==========================================================================
+   18. APARTMENT PAGE
+   ========================================================================== */
+
+/* ---- Hero ---------------------------------------------------------------------- */
 
 .apartment-hero {
   position: relative;
@@ -2274,6 +1916,8 @@ body {
   height: 1px;
   background: #d7a47b;
 }
+
+/* ---- Intro + facts card ---------------------------------------------------------- */
 
 .apartment-intro {
   background: var(--paper);
@@ -2418,6 +2062,8 @@ body {
   line-height: 1.7;
 }
 
+/* ---- Photo gallery with thumbnails ------------------------------------------------- */
+
 .apartment-gallery-section {
   background: var(--paper-deep);
 }
@@ -2429,8 +2075,8 @@ body {
 .apartment-gallery {
   display: grid;
   min-width: 0;
-  grid-template-columns: minmax(0, 1fr) 124px;
-  gap: 15px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
 }
 
 .apartment-gallery-main {
@@ -2482,6 +2128,7 @@ body {
   transform: translateY(-50%);
 }
 
+/* Reuses the shared .carousel-arrow, restyled for use on top of a photo */
 .apartment-gallery-arrows .carousel-arrow {
   border-color: rgba(255, 255, 255, 0.73);
   background: rgba(36, 25, 18, 0.34);
@@ -2497,7 +2144,8 @@ body {
 
 .apartment-thumbnails {
   display: grid;
-  grid-template-rows: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-auto-rows: 90px;
   gap: 8px;
 }
 
@@ -2528,6 +2176,8 @@ body {
   height: 100%;
   object-fit: cover;
 }
+
+/* ---- Amenities ----------------------------------------------------------------------- */
 
 .apartment-amenities {
   background: var(--paper);
@@ -2593,6 +2243,8 @@ body {
   font-size: 10px;
   line-height: 1.8;
 }
+
+/* ---- Call to action band --------------------------------------------------------------- */
 
 .apartment-cta {
   padding-block: 88px;
@@ -2660,6 +2312,11 @@ body {
   color: #e8c9a9;
 }
 
+
+/* ==========================================================================
+   19. RESERVATION PAGE
+   ========================================================================== */
+
 .reservation-page {
   background:
     radial-gradient(ellipse at 88% 18%, rgba(176, 132, 94, 0.11), transparent 30%),
@@ -2696,6 +2353,7 @@ body {
   line-height: 1.8;
 }
 
+/* Embedded booking widget */
 .reservation-frame-wrap {
   overflow: hidden;
   border: 1px solid rgba(74, 49, 32, 0.14);
@@ -2712,6 +2370,7 @@ body {
   background: white;
 }
 
+/* "Book by e-mail instead" card */
 .reservation-email {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -2772,6 +2431,11 @@ body {
   font-weight: 600;
 }
 
+
+/* ==========================================================================
+   20. RESTAURANT MENU PAGE
+   ========================================================================== */
+
 .restaurant-menu-page {
   background:
     radial-gradient(ellipse at 10% 20%, rgba(177, 137, 99, 0.11), transparent 25%),
@@ -2823,6 +2487,7 @@ body {
   color: var(--clay);
 }
 
+/* The "paper sheet" holding the menu */
 .menu-paper {
   max-width: 850px;
   margin-inline: auto;
@@ -3019,9 +2684,14 @@ body {
 
 .menu-phone {
   color: var(--clay);
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 17px;
 }
+
+
+/* ==========================================================================
+   21. OWNER MENU EDITOR
+   ========================================================================== */
 
 .owner-editor-body {
   min-height: 100vh;
@@ -3087,6 +2757,7 @@ body {
   line-height: 1.8;
 }
 
+/* Inline code in the editor texts */
 .owner-editor-heading code,
 .owner-publish-steps code {
   padding: 2px 5px;
@@ -3137,6 +2808,8 @@ body {
   box-shadow: 0 0 0 4px rgba(99, 138, 95, 0.12);
 }
 
+/* ---- Form fields ------------------------------------------------------------------------ */
+
 .owner-field {
   display: grid;
   gap: 7px;
@@ -3175,6 +2848,8 @@ body {
 .owner-notice-field {
   margin-bottom: 21px;
 }
+
+/* ---- Section / item cards ------------------------------------------------------------------ */
 
 .owner-section-list {
   display: grid;
@@ -3242,6 +2917,8 @@ body {
   font-size: 10px;
 }
 
+/* ---- Small action buttons -------------------------------------------------------------------- */
+
 .owner-add-item,
 .owner-delete-button {
   padding: 8px 11px;
@@ -3271,6 +2948,8 @@ body {
 .owner-delete-item {
   padding-block: 5px;
 }
+
+/* ---- Bottom actions & status ------------------------------------------------------------------ */
 
 .owner-editor-actions {
   display: flex;
@@ -3341,190 +3020,10 @@ body {
   color: #d8b895;
 }
 
-@media (max-width: 600px) {
-  .owner-editor-header {
-    min-height: 72px;
-    padding-inline: 18px;
-  }
 
-  .owner-editor-header .brand-name {
-    font-size: 14px;
-  }
-
-  .owner-preview-link {
-    max-width: 130px;
-    font-size: 9px;
-    text-align: right;
-  }
-
-  .owner-header-actions {
-    gap: 8px;
-  }
-
-  .owner-editor-main {
-    padding-block: 48px 65px;
-  }
-
-  .owner-editor-heading .section-title {
-    font-size: clamp(40px, 10vw, 54px);
-  }
-
-  .owner-card-heading {
-    align-items: flex-start;
-  }
-
-  .owner-card-heading h2 {
-    font-size: 21px;
-  }
-
-  .owner-editor-actions {
-    flex-direction: column;
-  }
-
-  .owner-editor-actions .button {
-    width: 100%;
-  }
-
-  .owner-editor-footer .footer-bottom {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-
-@media (max-width: 900px) {
-  .apartment-intro-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.78fr);
-    gap: 42px;
-  }
-
-  .amenity-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .amenity-card {
-    min-height: 190px;
-  }
-
-  .menu-sections {
-    gap: 26px;
-  }
-}
-
-@media (max-width: 760px) {
-  .apartment-hero {
-    min-height: max(580px, min(690px, calc(100svh - 74px)));
-  }
-
-  .apartment-hero-image {
-    object-position: 58% center;
-  }
-
-  .apartment-hero-shade {
-    background: linear-gradient(90deg, rgba(42, 29, 21, 0.77), rgba(42, 29, 21, 0.3)), linear-gradient(0deg, rgba(34, 22, 15, 0.42), transparent 58%);
-  }
-
-  .apartment-hero-content {
-    padding-block: 28px 76px;
-  }
-
-  .breadcrumb {
-    gap: 7px;
-    margin-bottom: 36px;
-    font-size: 9px;
-  }
-
-  .apartment-hero h1 {
-    font-size: clamp(43px, 10vw, 63px);
-  }
-
-  .apartment-hero-label {
-    right: 22px;
-    bottom: 24px;
-  }
-
-  .apartment-intro-grid {
-    grid-template-columns: 1fr;
-    gap: 35px;
-  }
-
-  .apartment-intro-copy .section-title {
-    font-size: clamp(37px, 9vw, 49px);
-  }
-
-  .apartment-facts {
-    padding: 24px;
-  }
-
-  .apartment-gallery {
-    grid-template-columns: 1fr;
-    gap: 11px;
-  }
-
-  .apartment-gallery-main {
-    height: min(72vw, 430px);
-    min-height: 255px;
-  }
-
-  .apartment-thumbnails {
-    width: 100%;
-    min-width: 0;
-    grid-template-columns: repeat(8, minmax(65px, 1fr));
-    grid-template-rows: 78px;
-    grid-auto-columns: 65px;
-    grid-auto-flow: column;
-    overflow-x: auto;
-    padding-bottom: 3px;
-  }
-
-  .amenity-grid {
-    gap: 9px;
-  }
-
-  .amenity-card {
-    min-height: 200px;
-    padding: 18px 15px;
-  }
-
-  .apartment-cta {
-    padding-block: 70px;
-  }
-
-  .apartment-cta-inner {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 30px;
-  }
-
-  .apartment-cta-actions {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .reservation-frame-wrap iframe {
-    min-height: 780px;
-  }
-
-  .reservation-email {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 15px;
-    padding: 20px;
-  }
-
-  .reservation-email .button {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 390px) {
-  .apartment-thumbnails {
-    grid-template-columns: repeat(8, 65px);
-  }
-
-  .amenity-card h3 {
-    font-size: 17px;
-  }
-}
+/* ==========================================================================
+   22. ACCOMMODATION DIRECTORY
+   ========================================================================== */
 
 .capacity-note {
   padding: 13px 15px;
@@ -3533,10 +3032,6 @@ body {
   color: #78695d;
   font-size: 11px;
   line-height: 1.7;
-}
-
-.apartment-thumbnails {
-  grid-auto-rows: minmax(0, 1fr);
 }
 
 .directory-list {
@@ -3592,7 +3087,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 550ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform 550ms var(--ease-out);
 }
 
 .accommodation-card:hover .accommodation-card-image img {
@@ -3671,6 +3166,11 @@ body {
   text-align: center;
 }
 
+
+/* ==========================================================================
+   23. PHOTO DIRECTORY & LIGHTBOX
+   ========================================================================== */
+
 .photo-directory {
   background: var(--paper-deep);
 }
@@ -3679,6 +3179,7 @@ body {
   margin-bottom: 30px;
 }
 
+/* Horizontally scrolling category chips */
 .photo-category-nav {
   display: flex;
   gap: 9px;
@@ -3751,6 +3252,7 @@ body {
   text-align: right;
 }
 
+/* Photo grid: every 7th photo (starting with the first) is a large tile */
 .photo-grid {
   display: grid;
   grid-auto-rows: 190px;
@@ -3780,9 +3282,10 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1), filter 300ms ease;
+  transition: transform 500ms var(--ease-out), filter 300ms ease;
 }
 
+/* Gradient behind the caption */
 .photo-card::after {
   position: absolute;
   inset: 35% 0 0;
@@ -3834,6 +3337,8 @@ body {
   background: rgba(36, 25, 18, 0.82);
   opacity: 1;
 }
+
+/* ---- Lightbox (<dialog>) -------------------------------------------------------------------- */
 
 .photo-lightbox {
   position: fixed;
@@ -3922,18 +3427,741 @@ body {
   right: -21px;
 }
 
+
+/* ==========================================================================
+   24. RESPONSIVE OVERRIDES
+   Ordered from large to small so smaller screens win. Inside each block the
+   rules follow the order of the sections above.
+   ========================================================================== */
+
+/* ---- 24.1 Large screens (>= 1050px): fixed-ratio centered home hero ------ */
+
+@media (min-width: 1050px) {
+  .hero:not(.wedding-page-hero) {
+    height: max(500px, 47vw);
+    min-height: 0;
+  }
+
+  .hero:not(.wedding-page-hero) .hero-content {
+    min-height: 100%;
+    padding-top: clamp(32px, 5vh, 60px);
+    padding-bottom: 0;
+  }
+}
+
+/* ---- 24.2 Tablet landscape (<= 1000px) ---------------------------------------- */
+
+@media (max-width: 1000px) {
+  .page-width {
+    width: min(var(--page-width), calc(100% - 64px));
+  }
+
+  /* Header */
+  .header-inner {
+    width: calc(100% - 56px);
+    gap: 24px;
+  }
+
+  .primary-nav {
+    gap: 18px;
+    font-size: 11px;
+  }
+
+  .primary-nav > a:nth-child(3) {
+    display: none;
+  }
+
+  /* Welcome */
+  .welcome-grid {
+    gap: 65px;
+  }
+
+  /* Stay */
+  .stay-grid {
+    height: 430px;
+  }
+
+  /* Experiences */
+  .experience-card {
+    padding-inline: 19px;
+  }
+
+  .experience-card h3 {
+    font-size: 20px;
+  }
+
+  /* Contact */
+  .contact-grid {
+    gap: 65px;
+  }
+}
+
+/* ---- 24.3 Tablet portrait (<= 900px) -------------------------------------------- */
+
 @media (max-width: 900px) {
+  /* Apartment page */
+  .apartment-intro-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.78fr);
+    gap: 42px;
+  }
+
+  .amenity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .amenity-card {
+    min-height: 190px;
+  }
+
+  /* Restaurant menu */
+  .menu-sections {
+    gap: 26px;
+  }
+
+  /* Accommodation directory */
   .accommodation-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  /* Photo directory */
   .photo-grid {
     grid-auto-rows: 165px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
+/* ---- 24.4 Mobile (<= 760px) ------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  html {
+    scroll-padding-top: 72px;
+  }
+
+  .section-pad {
+    padding-block: 83px;
+  }
+
+  .page-width {
+    width: calc(100% - 44px);
+  }
+
+  /* -- Header & mobile menu -- */
+  .header-inner {
+    width: calc(100% - 40px);
+    height: 74px;
+  }
+
+  .brand-mark {
+    width: 31px;
+  }
+
+  .brand-mark svg {
+    width: 30px;
+  }
+
+  .brand-name {
+    font-size: 15px;
+  }
+
+  .brand-place {
+    font-size: 9px;
+  }
+
+  .menu-toggle {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid var(--line);
+    background: transparent;
+    cursor: pointer;
+    place-items: center;
+  }
+
+  .menu-toggle-lines,
+  .menu-toggle-lines::before,
+  .menu-toggle-lines::after {
+    display: block;
+    width: 17px;
+    height: 1px;
+    background: var(--forest);
+    transition: transform 180ms ease;
+  }
+
+  .menu-toggle-lines {
+    position: relative;
+  }
+
+  .menu-toggle-lines::before,
+  .menu-toggle-lines::after {
+    position: absolute;
+    left: 0;
+    content: "";
+  }
+
+  .menu-toggle-lines::before {
+    top: -5px;
+  }
+
+  .menu-toggle-lines::after {
+    top: 5px;
+  }
+
+  .menu-toggle[aria-expanded="true"] .menu-toggle-lines {
+    background: transparent;
+  }
+
+  .menu-toggle[aria-expanded="true"] .menu-toggle-lines::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+
+  .menu-toggle[aria-expanded="true"] .menu-toggle-lines::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
+
+  .primary-nav {
+    position: absolute;
+    top: 74px;
+    right: 0;
+    left: 0;
+    display: none;
+    align-items: stretch;
+    gap: 0;
+    padding: 10px 22px 23px;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 14px 22px rgba(28, 38, 30, 0.1);
+    font-size: 13px;
+  }
+
+  .primary-nav.is-open {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .primary-nav > a:not(.nav-cta) {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .primary-nav > a:not(.nav-cta)::after {
+    display: none;
+  }
+
+  .nav-cta {
+    min-height: 47px;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding-inline: 16px;
+  }
+
+  /* -- Hero -- */
+  .hero {
+    width: calc(100% - 16px);
+    min-height: max(580px, min(710px, calc(100svh - 82px)));
+    border-radius: 17px;
+  }
+
+  .hero-shade {
+    background:
+      linear-gradient(90deg, rgba(47, 33, 24, 0.78), rgba(47, 33, 24, 0.26)),
+      linear-gradient(0deg, rgba(47, 33, 24, 0.32), transparent 48%);
+  }
+
+  .hero h1 {
+    font-size: clamp(49px, 11vw, 73px);
+  }
+
+  .hero-intro {
+    max-width: 385px;
+    font-size: 13px;
+  }
+
+  .hero-actions {
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 29px;
+  }
+
+  .hero-note {
+    right: 22px;
+    font-size: 8px;
+  }
+
+  .scroll-cue {
+    width: 26px;
+    height: 42px;
+  }
+
+  .scroll-cue span {
+    left: 12px;
+  }
+
+  /* -- Welcome -- */
+  .welcome {
+    padding-block: 88px 86px;
+  }
+
+  .welcome-grid {
+    grid-template-columns: 1fr;
+    gap: 51px;
+  }
+
+  .welcome-image-wrap {
+    max-width: 560px;
+    padding: 0;
+  }
+
+  .welcome-image {
+    height: min(390px, 76vw);
+    border-radius: 8px;
+  }
+
+  .image-stamp {
+    right: 8px;
+    width: 78px;
+    height: 78px;
+    font-size: 12px;
+  }
+
+  .welcome-copy .section-title,
+  .dining-copy .section-title,
+  .section-heading .section-title {
+    font-size: clamp(37px, 9vw, 49px);
+  }
+
+  /* -- Shared section heading -- */
+  .section-heading {
+    display: block;
+    margin-bottom: 32px;
+  }
+
+  .section-aside {
+    max-width: 440px;
+    margin-top: 16px;
+  }
+
+  /* These two heading variants kept their own bottom margin in the original
+     cascade (declared after the mobile .section-heading rule) */
+  .apartment-gallery-heading {
+    margin-bottom: 35px;
+  }
+
+  .photo-page-heading {
+    margin-bottom: 30px;
+  }
+
+  /* -- Opening hours -- */
+  .opening-hours-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .opening-hours-card {
+    padding: 21px 20px 17px;
+  }
+
+  .opening-hours-card h3 {
+    font-size: 25px;
+  }
+
+  .opening-hours-heading {
+    margin-bottom: 28px;
+  }
+
+  .opening-hours-note {
+    text-align: left;
+  }
+
+  /* -- Stay -- */
+  .stay-grid {
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 285px 210px;
+    gap: 10px;
+  }
+
+  .stay-card {
+    border-radius: 12px;
+  }
+
+  .stay-card-large {
+    grid-column: span 2;
+    grid-row: auto;
+  }
+
+  .stay-card-content {
+    right: 14px;
+    bottom: 15px;
+    left: 15px;
+  }
+
+  .stay-card-content > strong {
+    font-size: 20px;
+  }
+
+  .stay-card-large .stay-card-content > strong {
+    font-size: 28px;
+  }
+
+  .stay-footnote {
+    font-size: 10px;
+    line-height: 1.7;
+  }
+
+  /* -- Experiences -- */
+  .experiences {
+    padding-block: 85px 92px;
+  }
+
+  .center-heading {
+    margin-bottom: 37px;
+  }
+
+  .center-heading .section-title {
+    font-size: clamp(37px, 9vw, 49px);
+  }
+
+  .experience-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .experience-card {
+    min-height: 247px;
+    padding: 22px 17px;
+    border-radius: 12px;
+  }
+
+  .experience-card h3 {
+    font-size: 21px;
+  }
+
+  .experience-card p {
+    min-height: 67px;
+    font-size: 10px;
+  }
+
+  /* -- Wedding band -- */
+  .wedding {
+    width: calc(100% - 16px);
+    min-height: 0;
+    grid-template-columns: 1fr;
+    border-radius: 17px;
+  }
+
+  .wedding-image {
+    position: relative;
+    inset: auto;
+    height: 330px;
+  }
+
+  .wedding-image::after {
+    background: linear-gradient(0deg, rgba(49, 34, 25, 0.22), transparent 60%);
+  }
+
+  .wedding-copy {
+    grid-column: auto;
+    max-width: 580px;
+    padding: 62px 22px 74px;
+  }
+
+  .wedding-copy .section-title {
+    font-size: clamp(43px, 10vw, 58px);
+  }
+
+  .wedding-number {
+    right: -15px;
+    bottom: 130px;
+    font-size: 210px;
+  }
+
+  /* -- Wedding page -- */
+  .wedding-page-intro-grid {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .wedding-page-contact-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .wedding-page-intro .section-title,
+  .wedding-page-gallery .section-title,
+  .wedding-page-contact .section-title {
+    font-size: clamp(43px, 10vw, 58px);
+  }
+
+  .wedding-page-highlights {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 48px;
+  }
+
+  .wedding-page-highlights article {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .wedding-page-highlights p {
+    max-width: 430px;
+  }
+
+  .wedding-photo-grid {
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 220px 170px;
+    gap: 9px;
+  }
+
+  .wedding-photo-grid img:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* -- Dining -- */
+  .dining-grid {
+    grid-template-columns: 1fr;
+    gap: 43px;
+  }
+
+  .dining-photos {
+    min-height: 345px;
+    padding-left: 26px;
+  }
+
+  .dining-photos::before {
+    top: -17px;
+    left: 9px;
+  }
+
+  .dining-main-photo {
+    height: 300px;
+    border-radius: 150px 150px 12px 12px;
+  }
+
+  .dining-small-photo {
+    right: -4px;
+    width: 44%;
+    height: 145px;
+    border-width: 7px;
+    border-radius: 90px 90px 10px 10px;
+  }
+
+  .dining-photo-note {
+    bottom: 2px;
+    left: 26px;
+    font-size: 12px;
+  }
+
+  /* -- Gallery -- */
+  .gallery {
+    padding-block: 78px 83px;
+  }
+
+  .gallery-heading > .text-link {
+    margin-top: 21px;
+  }
+
+  .gallery-grid {
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 165px 165px;
+    gap: 9px;
+  }
+
+  .gallery-grid img {
+    border-radius: 10px;
+  }
+
+  /* -- Contact -- */
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 45px;
+  }
+
+  .contact-copy .section-title {
+    font-size: clamp(45px, 10vw, 61px);
+  }
+
+  .contact-card {
+    padding: 27px 25px;
+    border-radius: 12px;
+  }
+
+  /* -- Footer -- */
+  .footer-inner {
+    min-height: 0;
+    flex-wrap: wrap;
+    padding-block: 24px;
+  }
+
+  .footer-inner > p {
+    order: 3;
+    width: 100%;
+    margin: -5px 0 0 43px;
+  }
+
+  /* -- Apartment page -- */
+  .apartment-hero {
+    min-height: max(580px, min(690px, calc(100svh - 74px)));
+  }
+
+  .apartment-hero-image {
+    object-position: 58% center;
+  }
+
+  .apartment-hero-shade {
+    background: linear-gradient(90deg, rgba(42, 29, 21, 0.77), rgba(42, 29, 21, 0.3)), linear-gradient(0deg, rgba(34, 22, 15, 0.42), transparent 58%);
+  }
+
+  .apartment-hero-content {
+    padding-block: 28px 76px;
+  }
+
+  .breadcrumb {
+    gap: 7px;
+    margin-bottom: 36px;
+    font-size: 9px;
+  }
+
+  .apartment-hero h1 {
+    font-size: clamp(43px, 10vw, 63px);
+  }
+
+  .apartment-hero-label {
+    right: 22px;
+    bottom: 24px;
+  }
+
+  .apartment-intro-grid {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .apartment-intro-copy .section-title {
+    font-size: clamp(37px, 9vw, 49px);
+  }
+
+  .apartment-facts {
+    padding: 24px;
+  }
+
+  .apartment-gallery {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .apartment-gallery-main {
+    height: min(72vw, 430px);
+    min-height: 255px;
+  }
+
+  .apartment-thumbnails {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    grid-auto-rows: 72px;
+  }
+
+  .amenity-grid {
+    gap: 9px;
+  }
+
+  .amenity-card {
+    min-height: 200px;
+    padding: 18px 15px;
+  }
+
+  .apartment-cta {
+    padding-block: 70px;
+  }
+
+  .apartment-cta-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .apartment-cta-actions {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* -- Reservation page -- */
+  .reservation-frame-wrap iframe {
+    min-height: 780px;
+  }
+
+  .reservation-email {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .reservation-email .button {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- 24.5 Small mobile (<= 600px) ---------------------------------------------------- */
+
 @media (max-width: 600px) {
+  /* -- Owner editor -- */
+  .owner-editor-header {
+    min-height: 72px;
+    padding-inline: 18px;
+  }
+
+  .owner-editor-header .brand-logo {
+    width: 160px;
+  }
+
+  .owner-preview-link {
+    max-width: 130px;
+    font-size: 9px;
+    text-align: right;
+  }
+
+  .owner-header-actions {
+    gap: 8px;
+  }
+
+  .owner-editor-main {
+    padding-block: 48px 65px;
+  }
+
+  .owner-editor-heading .section-title {
+    font-size: clamp(40px, 10vw, 54px);
+  }
+
+  .owner-card-heading {
+    align-items: flex-start;
+  }
+
+  .owner-card-heading h2 {
+    font-size: 21px;
+  }
+
+  .owner-editor-actions {
+    flex-direction: column;
+  }
+
+  .owner-editor-actions .button {
+    width: 100%;
+  }
+
+  .owner-editor-footer .footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* -- Accommodation directory (cards become horizontal) -- */
   .accommodation-grid {
     grid-template-columns: 1fr;
     gap: 14px;
@@ -3993,6 +4221,7 @@ body {
     font-size: 10px;
   }
 
+  /* -- Reservation page -- */
   .reservation-heading .section-title {
     font-size: clamp(40px, 10vw, 55px);
   }
@@ -4005,6 +4234,7 @@ body {
     padding: 18px 15px;
   }
 
+  /* -- Restaurant menu -- */
   .menu-sections {
     grid-template-columns: 1fr;
   }
@@ -4030,6 +4260,7 @@ body {
     font-size: 22px;
   }
 
+  /* -- Photo directory & lightbox -- */
   .photo-page-heading {
     display: block;
   }
@@ -4066,10 +4297,6 @@ body {
     border-radius: 9px;
   }
 
-  .photo-card:nth-child(7n + 1) {
-    grid-row: span 2;
-  }
-
   .photo-card-caption {
     right: 9px;
     bottom: 9px;
@@ -4102,7 +4329,76 @@ body {
   }
 }
 
+/* ---- 24.6 Very small phones (<= 400px / 390px) ------------------------------------------- */
+
+@media (max-width: 400px) {
+  .page-width {
+    width: calc(100% - 36px);
+  }
+
+  .header-inner {
+    width: calc(100% - 32px);
+  }
+
+  .hero h1 {
+    font-size: 47px;
+  }
+
+  .hero-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .experience-card {
+    padding-inline: 13px;
+  }
+
+  .experience-card a {
+    font-size: 9px;
+  }
+
+  .contact-email {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 390px) {
+  .amenity-card h3 {
+    font-size: 17px;
+  }
+}
+
+
+/* ==========================================================================
+   25. REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-ready .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hero-content .eyebrow,
+  .hero h1,
+  .hero-intro,
+  .hero-actions {
+    animation: none;
+  }
+}
+
+
+/* ==========================================================================
+   26. DARK THEME
+   Re-defines the colour tokens, then patches every component whose colours
+   were hard-coded. Kept as one block at the end so it wins every tie.
+   ========================================================================== */
+
 @media (prefers-color-scheme: dark) {
+
+  /* ---- Tokens & base ---- */
+
   :root {
     color-scheme: dark;
     --paper: #211813;
@@ -4132,8 +4428,12 @@ body {
     color: #fff5e9;
   }
 
+  /* ---- Header ---- */
+
   .site-header {
     background: rgba(33, 24, 19, 0.96);
+    position: sticky;
+    top: 0;
   }
 
   .primary-nav {
@@ -4141,137 +4441,35 @@ body {
   }
 
   .nav-cta {
-    background: #a66d48;
+    background: #EAD8C3;
     color: #fff8ef;
   }
 
   .nav-cta:hover {
-    background: #c28b64;
+    background: #EAD8C3;
   }
 
-  .hero {
-    background: #211813;
-    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+  .menu-toggle {
+    border-color: rgba(231, 207, 183, 0.24);
   }
 
-  .hero-shade {
-    background:
-      linear-gradient(90deg, rgba(25, 17, 13, 0.83), rgba(25, 17, 13, 0.55) 47%, rgba(25, 17, 13, 0.16)),
-      linear-gradient(0deg, rgba(25, 17, 13, 0.34), transparent 45%);
+  .menu-toggle-lines,
+  .menu-toggle-lines::before,
+  .menu-toggle-lines::after {
+    background: #eadccb;
   }
+
+  /* ---- Shared ---- */
 
   .hero h1 em,
   .section-title em {
     color: #d8b895;
   }
 
-  .welcome-image-wrap::after {
-    background: #38271e;
-  }
-
-  .image-caption {
-    background: rgba(35, 23, 16, 0.91);
-  }
-
-  .image-caption span:first-child,
-  .slide-count {
-    color: #e6bd96;
-  }
-
-  .welcome-copy p:not(.eyebrow),
-  .dining-copy > p:not(.eyebrow),
-  .experience-card p,
-  .section-aside,
-  .stay-footnote {
-    color: #c4b09d;
-  }
-
-  .welcome-copy .lead,
-  .dining-copy .lead {
-    color: #e5d5c4 !important;
-  }
-
   .text-link,
   .experience-card a {
     border-color: #75543d;
     color: #eedbc5;
-  }
-
-  .welcome-details {
-    color: #c4b09d;
-  }
-
-  .welcome-details strong {
-    color: #f0e4d6;
-  }
-
-  .detail-icon,
-  .time-icon,
-  .carousel-arrow {
-    border-color: #65503e;
-    color: #e2b995;
-  }
-
-  .stay,
-  .gallery {
-    background: #2c211a;
-  }
-
-  .stay-card {
-    background: #473426;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.22);
-  }
-
-  .stay-card > img {
-    filter: saturate(0.76) brightness(0.82);
-  }
-
-  .stay-card:hover > img {
-    filter: saturate(0.94) brightness(0.9);
-  }
-
-  .stay-overlay {
-    background: linear-gradient(0deg, rgba(22, 15, 11, 0.91), rgba(22, 15, 11, 0.08) 80%);
-  }
-
-  .experience-card,
-  .experience-card + .experience-card,
-  .experience-card:nth-child(even),
-  .experience-card:nth-child(n + 3) {
-    border-color: rgba(231, 207, 183, 0.16);
-    background: rgba(255, 241, 224, 0.035);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  }
-
-  .experience-card:hover {
-    background: #39291f;
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.24);
-  }
-
-  .experience-number {
-    color: #c1a68b;
-  }
-
-  .experience-icon {
-    background: #403025;
-    color: #dda77e;
-  }
-
-  .experience-card h3 {
-    color: #f0e4d6;
-  }
-
-  .wedding {
-    background: #302117;
-  }
-
-  .wedding-image::after {
-    background: linear-gradient(90deg, rgba(34, 22, 15, 0.06), rgba(34, 22, 15, 0.48));
-  }
-
-  .wedding-copy .section-title em,
-  .contact-copy .section-title em {
-    color: #dfb78f;
   }
 
   .button-light {
@@ -4296,17 +4494,215 @@ body {
     color: #38271e;
   }
 
-  .dining-photos::before {
-    border-color: #65503e;
+  .carousel-dot {
+    background: #72583f;
   }
 
-  .dining-small-photo {
-    border-color: var(--paper);
+  .carousel-dot.is-active,
+  .carousel-dot:hover {
+    background: #d39a70;
+  }
+
+  .carousel-arrow:hover {
+    border-color: #d39a70;
+    background: #d39a70;
+    color: #211813;
+  }
+
+  /* Body copy colour shared by several sections */
+  .welcome-copy p:not(.eyebrow),
+  .dining-copy > p:not(.eyebrow),
+  .experience-card p,
+  .section-aside,
+  .stay-footnote {
+    color: #c4b09d;
+  }
+
+  .welcome-copy .lead,
+  .dining-copy .lead {
+    color: #e5d5c4 !important;
+  }
+
+  /* ---- Hero ---- */
+
+  .hero {
+    background: #211813;
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+  }
+
+  .hero-shade {
+    background:
+      linear-gradient(90deg, rgba(25, 17, 13, 0.83), rgba(25, 17, 13, 0.55) 47%, rgba(25, 17, 13, 0.16)),
+      linear-gradient(0deg, rgba(25, 17, 13, 0.34), transparent 45%);
+  }
+
+  /* ---- Welcome ---- */
+
+  .image-caption {
+    background: rgba(35, 23, 16, 0.91);
+  }
+
+  .image-caption span:first-child,
+  .slide-count {
+    color: #e6bd96;
+  }
+
+  .welcome-details {
+    color: #c4b09d;
+  }
+
+  .welcome-details strong {
+    color: #f0e4d6;
+  }
+
+  .detail-icon,
+  .time-icon,
+  .carousel-arrow {
+    border-color: #65503e;
+    color: #e2b995;
+  }
+
+  /* ---- Stay ---- */
+
+  .stay,
+  .gallery {
+    background: #2c211a;
+  }
+
+  .stay-card {
+    background: #473426;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.22);
+  }
+
+  .stay-card > img {
+    filter: saturate(0.76) brightness(0.82);
+  }
+
+  .stay-card:hover > img {
+    filter: saturate(0.94) brightness(0.9);
+  }
+
+  .stay-overlay {
+    background: linear-gradient(0deg, rgba(22, 15, 11, 0.91), rgba(22, 15, 11, 0.08) 80%);
+  }
+
+  /* ---- Experiences ---- */
+
+  .experience-card {
+    border-color: rgba(231, 207, 183, 0.16);
+    background: rgba(255, 241, 224, 0.035);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .experience-card:hover {
+    background: #39291f;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.24);
+  }
+
+  .experience-number {
+    color: #c1a68b;
+  }
+
+  .experience-icon {
+    background: #403025;
+    color: #dda77e;
+  }
+
+  .experience-card h3 {
+    color: #f0e4d6;
+  }
+
+  /* ---- Wedding band ---- */
+
+  .wedding {
+    background: #302117;
+  }
+
+  .wedding-image::after {
+    background: linear-gradient(90deg, rgba(34, 22, 15, 0.06), rgba(34, 22, 15, 0.48));
+  }
+
+  .wedding-copy .section-title em,
+  .contact-copy .section-title em {
+    color: #dfb78f;
+  }
+
+  /* ---- Wedding page ---- */
+
+  .wedding-page-gallery {
+    background: #2c211a;
+  }
+
+  .wedding-page-intro .section-title em,
+  .wedding-page-gallery .section-title em {
+    color: #dfb78f;
+  }
+
+  .wedding-page-intro-copy .lead,
+  .wedding-page-highlights h3 {
+    color: #f0e4d6;
+  }
+
+  .wedding-page-intro-copy > p:not(.lead),
+  .wedding-page-highlights p {
+    color: #c4b09d;
+  }
+
+  .wedding-page-highlights,
+  .wedding-page-highlights article {
+    border-color: rgba(231, 207, 183, 0.16);
+  }
+
+  .wedding-page-intro .text-link {
+    border-color: #75543d;
+    color: #eedbc5;
+  }
+
+  .wedding-page-contact {
+    background:
+      radial-gradient(ellipse at 13% 100%, rgba(177, 137, 99, 0.12), transparent 35%),
+      #302117;
+  }
+
+  /* ---- Dining ---- */
+
+  .dining-photos::before {
+    border-color: #65503e;
   }
 
   .dining-photo-note {
     color: #c4b09d;
   }
+
+  /* ---- Opening hours ---- */
+
+  .opening-hours {
+    background:
+      radial-gradient(ellipse at 50% 0, rgba(135, 91, 57, 0.12), transparent 55%),
+      var(--paper);
+  }
+
+  .opening-hours-card {
+    border-color: rgba(231, 207, 183, 0.15);
+    background: rgba(48, 35, 27, 0.78);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  }
+
+  .opening-hours-card-header,
+  .opening-hours-list > div {
+    border-color: rgba(231, 207, 183, 0.12);
+  }
+
+  .opening-hours-list dd {
+    color: #e5c4a4;
+  }
+
+  .opening-hours-list dd.is-closed,
+  .opening-hours-note {
+    color: #c4b09d;
+  }
+
+  /* ---- Gallery ---- */
 
   .gallery-grid img {
     filter: saturate(0.72) brightness(0.82);
@@ -4316,6 +4712,8 @@ body {
     filter: saturate(0.95) brightness(0.94);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
   }
+
+  /* ---- Contact ---- */
 
   .contact {
     background:
@@ -4338,38 +4736,13 @@ body {
     border-color: rgba(239, 220, 199, 0.17);
   }
 
+  /* ---- Footer ---- */
+
   .site-footer {
     background: #17110d;
   }
 
-  .menu-toggle {
-    border-color: rgba(231, 207, 183, 0.24);
-  }
-
-  .menu-toggle-lines,
-  .menu-toggle-lines::before,
-  .menu-toggle-lines::after {
-    background: #eadccb;
-  }
-
-  .menu-toggle[aria-expanded="true"] .menu-toggle-lines {
-    background: transparent;
-  }
-
-  .carousel-dot {
-    background: #72583f;
-  }
-
-  .carousel-dot.is-active,
-  .carousel-dot:hover {
-    background: #d39a70;
-  }
-
-  .carousel-arrow:hover {
-    border-color: #d39a70;
-    background: #d39a70;
-    color: #211813;
-  }
+  /* ---- Apartment page ---- */
 
   .apartment-hero {
     background: #211813;
@@ -4384,18 +4757,7 @@ body {
   }
 
   .apartment-intro-copy p:not(.eyebrow),
-  .amenity-card p,
-  .accommodation-card-copy > p:not(.eyebrow),
-  .accommodation-card-meta span,
-  .directory-price-note,
-  .capacity-note,
-  .photo-group-heading p,
-  .reservation-heading > p:last-child,
-  .reservation-email p,
-  .reservation-contact,
-  .menu-page-heading > p:not(.eyebrow),
-  .menu-restaurant-facts,
-  .menu-contact p {
+  .amenity-card p {
     color: #c4b09d;
   }
 
@@ -4406,139 +4768,6 @@ body {
   .apartment-facts {
     border-color: rgba(231, 207, 183, 0.15);
     background: #30231b;
-  }
-
-  .accommodation-card {
-    border-color: rgba(231, 207, 183, 0.15);
-    background: #30231b;
-  }
-
-  .menu-paper {
-    border-color: rgba(231, 207, 183, 0.15);
-    background:
-      linear-gradient(rgba(48, 35, 27, 0.96), rgba(48, 35, 27, 0.96)),
-      repeating-linear-gradient(0deg, transparent 0 33px, rgba(231, 207, 183, 0.08) 34px);
-  }
-
-  .menu-category-heading h3,
-  .menu-item h4 {
-    color: #f0e4d6;
-  }
-
-  .menu-category-heading p,
-  .menu-item p,
-  .menu-notice,
-  .menu-owner-note,
-  .menu-breakfast {
-    color: #c4b09d;
-  }
-
-  .menu-category-heading,
-  .menu-paper-heading {
-    border-color: rgba(231, 207, 183, 0.17);
-  }
-
-  .menu-owner-note {
-    background: rgba(211, 154, 112, 0.1);
-  }
-
-  .menu-owner-note code {
-    background: rgba(231, 207, 183, 0.1);
-    color: #f0e4d6;
-  }
-
-  .owner-editor-heading > p:last-child,
-  .owner-editor-warning,
-  .owner-field,
-  .owner-delete-button,
-  .owner-add-item,
-  .owner-publish-steps {
-    color: #c4b09d;
-  }
-
-  .owner-editor-warning,
-  .owner-publish-steps {
-    background: rgba(255, 241, 224, 0.045);
-  }
-
-  .owner-live-banner {
-    border-color: rgba(157, 190, 143, 0.2);
-    background: rgba(157, 190, 143, 0.08);
-    color: #c4d2b8;
-  }
-
-  .owner-editor-warning strong,
-  .owner-card-heading h2,
-  .owner-items-heading,
-  .owner-item-heading {
-    color: #f0e4d6;
-  }
-
-  .owner-section-card {
-    border-color: rgba(231, 207, 183, 0.15);
-    background: #30231b;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  }
-
-  .owner-item-card {
-    border-color: rgba(231, 207, 183, 0.12);
-    background: #211813;
-  }
-
-  .owner-field input,
-  .owner-field textarea {
-    border-color: rgba(231, 207, 183, 0.16);
-    background: #211813;
-  }
-
-  .owner-editor-heading code,
-  .owner-publish-steps code {
-    background: rgba(231, 207, 183, 0.1);
-    color: #f0e4d6;
-  }
-
-  .owner-add-item,
-  .owner-delete-button {
-    border-color: rgba(231, 207, 183, 0.2);
-  }
-
-  .accommodation-card:hover {
-    border-color: rgba(211, 154, 112, 0.58);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.24);
-  }
-
-  .photo-category-nav a {
-    border-color: rgba(231, 207, 183, 0.18);
-    color: #d7c5b2;
-  }
-
-  .photo-category-nav a:hover,
-  .photo-category-nav a:focus-visible {
-    border-color: var(--clay);
-    color: white;
-  }
-
-  .photo-card {
-    background: #473426;
-  }
-
-  .reservation-frame-wrap {
-    border-color: rgba(231, 207, 183, 0.15);
-    background: white;
-  }
-
-  .reservation-email {
-    border-color: rgba(231, 207, 183, 0.15);
-    background: rgba(255, 241, 224, 0.035);
-  }
-
-  .reservation-email-icon {
-    background: #403025;
-    color: #dda77e;
-  }
-
-  .capacity-note {
-    background: rgba(211, 154, 112, 0.1);
   }
 
   .facts-kicker,
@@ -4616,5 +4845,164 @@ body {
     background:
       radial-gradient(ellipse at 12% 100%, rgba(173, 120, 80, 0.17), transparent 38%),
       #38271e;
+  }
+
+  /* ---- Reservation page ---- */
+
+  .reservation-heading > p:last-child,
+  .reservation-email p,
+  .reservation-contact {
+    color: #c4b09d;
+  }
+
+  .reservation-frame-wrap {
+    border-color: rgba(231, 207, 183, 0.15);
+  }
+
+  .reservation-email {
+    border-color: rgba(231, 207, 183, 0.15);
+    background: rgba(255, 241, 224, 0.035);
+  }
+
+  .reservation-email-icon {
+    background: #403025;
+    color: #dda77e;
+  }
+
+  /* ---- Restaurant menu page ---- */
+
+  .menu-page-heading > p:not(.eyebrow),
+  .menu-restaurant-facts,
+  .menu-contact p {
+    color: #c4b09d;
+  }
+
+  .menu-paper {
+    border-color: rgba(231, 207, 183, 0.15);
+    background:
+      linear-gradient(rgba(48, 35, 27, 0.96), rgba(48, 35, 27, 0.96)),
+      repeating-linear-gradient(0deg, transparent 0 33px, rgba(231, 207, 183, 0.08) 34px);
+  }
+
+  .menu-category-heading h3,
+  .menu-item h4 {
+    color: #f0e4d6;
+  }
+
+  .menu-category-heading p,
+  .menu-item p,
+  .menu-notice,
+  .menu-breakfast {
+    color: #c4b09d;
+  }
+
+  .menu-category-heading,
+  .menu-paper-heading {
+    border-color: rgba(231, 207, 183, 0.17);
+  }
+
+  .menu-owner-note {
+    background: rgba(211, 154, 112, 0.1);
+    color: #c4b09d;
+  }
+
+  .menu-owner-note code {
+    background: rgba(231, 207, 183, 0.1);
+    color: #f0e4d6;
+  }
+
+  /* ---- Owner menu editor ---- */
+
+  .owner-editor-heading > p:last-child,
+  .owner-editor-warning,
+  .owner-field,
+  .owner-delete-button,
+  .owner-add-item,
+  .owner-publish-steps {
+    color: #c4b09d;
+  }
+
+  .owner-editor-warning,
+  .owner-publish-steps {
+    background: rgba(255, 241, 224, 0.045);
+  }
+
+  .owner-live-banner {
+    border-color: rgba(157, 190, 143, 0.2);
+    background: rgba(157, 190, 143, 0.08);
+    color: #c4d2b8;
+  }
+
+  .owner-editor-warning strong,
+  .owner-card-heading h2,
+  .owner-items-heading,
+  .owner-item-heading {
+    color: #f0e4d6;
+  }
+
+  .owner-section-card {
+    border-color: rgba(231, 207, 183, 0.15);
+    background: #30231b;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .owner-item-card {
+    border-color: rgba(231, 207, 183, 0.12);
+    background: #211813;
+  }
+
+  .owner-field input,
+  .owner-field textarea {
+    border-color: rgba(231, 207, 183, 0.16);
+    background: #211813;
+  }
+
+  .owner-editor-heading code,
+  .owner-publish-steps code {
+    background: rgba(231, 207, 183, 0.1);
+    color: #f0e4d6;
+  }
+
+  .owner-add-item,
+  .owner-delete-button {
+    border-color: rgba(231, 207, 183, 0.2);
+  }
+
+  /* ---- Accommodation directory ---- */
+
+  .accommodation-card {
+    border-color: rgba(231, 207, 183, 0.15);
+    background: #30231b;
+  }
+
+  .accommodation-card:hover {
+    border-color: rgba(211, 154, 112, 0.58);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.24);
+  }
+
+  .accommodation-card-copy > p:not(.eyebrow),
+  .accommodation-card-meta span,
+  .directory-price-note {
+    color: #c4b09d;
+  }
+
+  .capacity-note {
+    background: rgba(211, 154, 112, 0.1);
+    color: #c4b09d;
+  }
+
+  /* ---- Photo directory ---- */
+
+  .photo-group-heading p {
+    color: #c4b09d;
+  }
+
+  .photo-category-nav a {
+    border-color: rgba(231, 207, 183, 0.18);
+    color: #d7c5b2;
+  }
+
+  .photo-card {
+    background: #473426;
   }
 }

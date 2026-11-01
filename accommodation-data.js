@@ -56,7 +56,7 @@ window.accommodationData = [
       ["♧", "Dětské hřiště", "Prostorné dětské hřiště využívají děti pod dohledem rodičů."],
     ],
     photos: [
-      ["https://061a38cc1e.clvaw-cdnwnd.com/6bcaeae67997544c7cf5f5587b1cbe32/200012455-8e6ac8e6ae/IMG_1518.jpg", "Kamenný apartmán U Rytíře"],
+      ["https://061a38cc1e.clvaw-cdnwnd.com/6bcaeae67997544c7cf5f5587b1cbe32/200012466-76e1976e1b/IMG_1637.jpg", "Kamenný apartmán U Rytíře"],
       ["https://061a38cc1e.clvaw-cdnwnd.com/6bcaeae67997544c7cf5f5587b1cbe32/200012458-989fb989fd/IMG_1548.jpg", "Interiér apartmánu U Rytíře"],
       ["https://061a38cc1e.clvaw-cdnwnd.com/6bcaeae67997544c7cf5f5587b1cbe32/200012459-c1680c1681/IMG_1570.jpg", "Prostor k odpočinku v apartmánu U Rytíře"],
       ["https://061a38cc1e.clvaw-cdnwnd.com/6bcaeae67997544c7cf5f5587b1cbe32/200012462-a9a98a9a99/IMG_1589.jpg", "Kamenné detaily apartmánu U Rytíře"],

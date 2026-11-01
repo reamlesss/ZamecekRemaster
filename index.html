@@ -24,18 +24,8 @@
 
     <header class="site-header" id="top">
       <div class="header-inner">
-        <a class="brand" href="index.html#top" aria-label="Zámeček Kaliště — úvod">
-          <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 42 48" fill="none">
-              <path d="M21 2 39 9v13c0 11-7 19-18 24C10 41 3 33 3 22V9L21 2Z" />
-              <path d="M11 30V19l5 4v-8l5 5v-9l5 9 5-4v14H11Z" />
-              <path d="M18 30v-6h6v6M8 35h26" />
-            </svg>
-          </span>
-          <span class="brand-copy">
-            <span class="brand-name">Zámeček Kaliště</span>
-            <span class="brand-place">Poddubí v Posázaví</span>
-          </span>
+        <a class="brand" href="index.html" aria-label="Zámeček Kaliště — úvod">
+          <img class="brand-logo" src="Logo.png" alt="" />
         </a>
 
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
@@ -44,14 +34,14 @@
         </button>
 
         <nav class="primary-nav" id="primary-nav" aria-label="Hlavní navigace">
-          <a href="index.html#zamecek">Zámeček</a>
+          <a href="index.html">Zámeček</a>
           <a href="accommodations.html">Ubytování</a>
           <a href="index.html#zazitky">Zážitky</a>
           <a href="photos.html">Fotogalerie</a>
           <a href="menu.html">Jídelní lístek</a>
-          <a href="index.html#svatby">Svatby &amp; akce</a>
+          <a href="weddings.html">Svatby &amp; akce</a>
           <a href="index.html#kontakt">Kontakt</a>
-          <a class="nav-cta" href="reservations.html">Rezervovat <span aria-hidden="true">↗</span></a>
+          <a class="nav-cta" href="reservations.html">Rezervovat</a>
         </nav>
       </div>
     </header>
@@ -73,12 +63,67 @@
             které si budete chtít připomínat.
           </p>
           <div class="hero-actions">
-            <a class="button button-light" href="#zamecek">Objevte Zámeček <span aria-hidden="true">↓</span></a>
-            <a class="hero-phone" href="tel:+420603543629"><span class="phone-icon" aria-hidden="true">↗</span> +420 603 543 629</a>
+            <!-- <a class="button button-light" href="#zamecek">Objevte Zámeček <span aria-hidden="true">↓</span></a> -->
+            <!-- <a class="hero-phone" href="tel:+420603543629"><span class="phone-icon" aria-hidden="true">  </span> +420 603 543 629</a> -->
           </div>
         </div>
         <div class="hero-note"><span class="note-line"></span><span>U řeky Sázavy</span></div>
         <a class="scroll-cue" href="#zamecek" aria-label="Posunout na další sekci"><span></span></a>
+      </section>
+
+      <section class="opening-hours section-pad" aria-labelledby="opening-hours-title">
+        <div class="page-width">
+          <div class="section-heading opening-hours-heading">
+            <div>
+              <p class="eyebrow"><span></span> Těšíme se na vaši návštěvu</p>
+              <h2 class="section-title" id="opening-hours-title">Otevírací <em>doba.</em></h2>
+            </div>
+            <p class="section-aside">Otevírací dobu lze po dohodě s hosty a v případě potřeby upravit.</p>
+          </div>
+          <div class="opening-hours-grid">
+            <article class="opening-hours-card opening-hours-card-seasonal">
+              <header class="opening-hours-card-header">
+                <div>
+                  <h3>Sezónní</h3>
+                  <p class="opening-hours-season">Červen–říjen</p>
+                </div>
+                <!-- <span class="opening-hours-index" aria-hidden="true">01</span> -->
+              </header>
+              <dl class="opening-hours-list">
+                <div><dt>Pondělí</dt><dd class="is-closed">Zavřeno</dd></div>
+                <div><dt>Úterý</dt><dd class="is-closed">Zavřeno</dd></div>
+                <div><dt>Středa</dt><dd>11:00–21:30</dd></div>
+                <div><dt>Čtvrtek</dt><dd>11:00–21:30</dd></div>
+                <div><dt>Pátek</dt><dd>11:00–23:00</dd></div>
+                <div><dt>Sobota</dt><dd>11:00–23:00</dd></div>
+                <div><dt>Neděle</dt><dd>11:00–15:00</dd></div>
+              </dl>
+            </article>
+            <article class="opening-hours-card">
+              <header class="opening-hours-card-header">
+                <div>
+                  <h3>Mimo sezónu</h3>
+                  <p class="opening-hours-season">Říjen–květen</p>
+                </div>
+                <!-- <span class="opening-hours-index" aria-hidden="true">02</span> -->
+              </header>
+              <dl class="opening-hours-list">
+                <div><dt>Pondělí</dt><dd class="is-closed">Zavřeno</dd></div>
+                <div><dt>Úterý</dt><dd class="is-closed">Zavřeno</dd></div>
+                <div><dt>Středa</dt><dd class="is-closed">Zavřeno</dd></div>
+                <div><dt>Čtvrtek</dt><dd class="is-closed">Zavřeno</dd></div>
+                <div><dt>Pátek</dt><dd>11:00–23:00</dd></div>
+                <div><dt>Sobota</dt><dd>11:00–23:00</dd></div>
+                <div><dt>Neděle</dt><dd>11:00–15:00</dd></div>
+              </dl>
+            </article>
+          </div>
+          <p class="opening-hours-note"><span aria-hidden="true">✳</span> Po dohodě s hosty lze otevírací a zavírací dobu upravit.</p>
+          <div class="subtitle-container">
+          <h3 class="section-subtitle" id="opening-hours-subtext">Během prázdnin otevřeno každý den!</h3>
+          </div>
+        </div>
+        
       </section>
 
       <section class="welcome section-pad" id="zamecek">
@@ -125,7 +170,9 @@
             </p>
             <a class="text-link" href="#kontakt">Naplánovat návštěvu <span aria-hidden="true">↗</span></a>
             <div class="welcome-details">
-              <span class="detail-icon" aria-hidden="true">⌖</span>
+              <span class="detail-icon" aria-hidden="true">
+                <img src="location-pin.svg" alt="" />
+              </span>
               <span><strong>Poddubí 55</strong><br />251 65 Kaliště · Posázaví</span>
             </div>
           </div>
@@ -197,7 +244,7 @@
               </span>
               <h3>Svatby<br />&amp; oslavy</h3>
               <p>Vysněný den, krásné prostředí a pohostinnost, díky které se každý cítí vítaný.</p>
-              <a href="mailto:nazamecku.provoz@seznam.cz?subject=Svatba%20na%20Z%C3%A1me%C4%8Dku" aria-label="Informace o svatbách a oslavách">Plánovat oslavu <span aria-hidden="true">↗</span></a>
+              <a href="weddings.html" aria-label="Informace o svatbách a oslavách">Plánovat oslavu <span aria-hidden="true">↗</span></a>
             </article>
             <article class="experience-card" id="akce">
               <span class="experience-number">03 / 04</span>
@@ -233,7 +280,7 @@
           <p class="eyebrow eyebrow-light"><span></span> Pro chvíle, které zůstávají</p>
           <h2 class="section-title">Váš příběh.<br /><em>Naše kulisy.</em></h2>
           <p>Řekněte si své „ano“ v romantickém prostředí loveckého zámečku. O krásné místo, slavnostní tabuli a příjemné zázemí se postaráme společně.</p>
-          <a class="button button-outline-light" href="mailto:nazamecku.provoz@seznam.cz?subject=Svatba%20na%20Z%C3%A1me%C4%8Dku">Promluvme si o vaší svatbě <span aria-hidden="true">↗</span></a>
+          <a class="button button-outline-light" href="weddings.html">Více o svatbách <span aria-hidden="true">↗</span></a>
         </div>
         <span class="wedding-number" aria-hidden="true">II</span>
       </section>
@@ -285,7 +332,10 @@
           </div>
           <div class="contact-card">
             <span class="contact-card-label">Najdete nás</span>
-            <address>Poddubí 55<br />251 65 Kaliště</address>
+            <address class="address-location">
+              <img src="location-pin.svg" alt="" />
+              <span>Poddubí 55<br />251 65 Kaliště</span>
+            </address>
             <a class="contact-map" href="https://maps.google.com/?q=Poddub%C3%AD+55%2C+251+65+Kali%C5%A1t%C4%9B" target="_blank" rel="noreferrer">Otevřít mapu <span aria-hidden="true">↗</span></a>
             <span class="contact-rule"></span>
             <span class="contact-card-label">Zavolejte nám</span>
