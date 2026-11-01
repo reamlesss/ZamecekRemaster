@@ -29,9 +29,8 @@ const colorScheme = window.matchMedia("(prefers-color-scheme: dark)");
 const themeColor = document.querySelector('meta[name="theme-color"]');
 
 function updateThemeColor(event) {
-  // if (themeColor) themeColor.content = event.matches ? "#211813" : "#f7f0e6";
-    //if (themeColor) themeColor.content = "#211813"; //darkmode na tvrdo'
-    themeColor.content = '#211813'
+  if (themeColor) themeColor.content = event.matches ? "#211813" : "#f7f0e6";
+    // themeColor.content = '#211813'
 
 }
 

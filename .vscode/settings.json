@@ -1,3 +1,7 @@
 {
-    "editor.cursorStyle": "line"
+    "editor.cursorStyle": "block",
+    "workbench.colorTheme": "Catppuccin Noir",
+    "workbench.colorCustomizations": {
+        "terminal.background": "#00000000"
+    }
 }

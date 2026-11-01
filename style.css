@@ -4441,12 +4441,12 @@ button {
   }
 
   .nav-cta {
-    background: #EAD8C3;
+    background: var(--forest);
     color: #fff8ef;
   }
 
   .nav-cta:hover {
-    background: #EAD8C3;
+    background: var(--clay);
   }
 
   .menu-toggle {
